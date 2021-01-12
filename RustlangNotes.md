@@ -214,7 +214,8 @@ let s = "String"; // slice of string, type str
 //que declararla de esta otra manera
 let ss = String::from("String!"); // type String
 
-//las string no son técnicamente tipos literales en Rust, en vez de eso son mas como arrays o tuplas en el sentido de que están compuestas por diferentes caracteres
+/*las string no son técnicamente tipos literales en Rust, en vez de eso son mas como arrays o tuplas en el sentido de que están compuestas por diferentes caracteres
+*/
 
 //podemos convertir la variable s en una string de la siguiente manera
 
@@ -229,4 +230,79 @@ let h = String::from("Hello, ");
 let w = String::from("World!");
 let s = h + &w;
 println!("{}", s);// return Hello, World!
+```
+
+## Ownership and Borrowing
+
+Si piensas en lenguajes como C++ y C en ellos tiene la habilidad de manejar directa e indirectamente la memoria, estos tienen los punteros y las referencias, pero a la vez hay un poco de peligro en el ser capaz de poder manejar manualmente los punteros y las referencias, si creas dos punteros los cuales apuntan a la misma pieza de data y luego quitas esa referencia puedes causar una corrupción en la memoria, por eso los lenguajes de alto nivel como Java, C#, Python y Ruby usan el conocido "garbage collector" este es en esencia un algoritmo que va por ahi y encuentra todos los espacios libres en memoria y los libera automáticamente. En Rust tenemos algo en el medio, el llamado **"Ownership"**, este sigue 3 reglas.
+
+Cada variable tiene un valor y la variable en si misma es llamada Owner
+
+Ej:
+
+```Rust
+let x = 1;//podemos decir que x "Owns" 1
+```
+
+Cada pedazo de data puede tener solo un **"Owner"** a la vez
+
+```Rust
+//Cuando el owner se sale del scope actual el valor es dropeado(espanglish btw)
+let x = 1;
+let y = x;
+
+//si creamos un nuevo scope
+{
+    let a = 10;
+}
+
+x + a; //tendríamos problemas con esto porque a no existe en este scope
+
+let s = String::from("String"); // definimos una string
+// s owns the string
+let y = s; //bind s to y
+
+println!("{}", s); // ERROR use of moved value: `s`
+// lo que pasa es que movimos la referencia de s a y
+// depues de eso la referencia de s desapareció completamente del scope
+//Only one reference can own a piece of data at the time
+//Para solucionar esto podemos usar lo que es llamado "Borrowing"
+let s = String::from("String");
+let y = &s;// y is equals to a reference to s
+```
+
+```Rust
+fn take(v: Vec<i32>) { //vector of dinamic size
+    println!("We took v: {}", v[10] + v[100]);
+}
+fn main() {
+    let mut v = Vec::new();
+
+    for i in 1..1000 { //put the data into the vector
+        v.push(i);
+    }
+
+    take(v); //transfering the ownership from the main func to the take func
+    //never return the ownership back to the main func
+    //println!("{}", v[0]);
+    println!("Finished");
+    //this is what is called moving because we are actually moving the resource from one func to another
+}
+```
+
+```Rust
+//Tambien podemos usar al llamado "coping"
+//Ej:
+fn cop(a: i32, b: i32) {
+    println!("{}", a + b);
+} fn() -> ()
+fn main() {
+    let a = 32;
+    let b = 45;
+
+    cop(a,b);//unlike the string values that we haved before, they don't become unallocated in the main function
+    //thats beacuse they not actually being moved instead they're being copied
+
+    println!("we have a: {} and b: {}", a, b);
+}
 ```
