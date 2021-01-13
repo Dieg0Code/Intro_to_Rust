@@ -347,7 +347,7 @@ impl Object {
 //Podemos simplificarlo aun mas:
 impl Object {
 
-    fn area(&self) -> u32 { //self automáticamente hará referencia al objeto al que esta vinculado
+    fn area(&self) -> u32 { //self automáticamente hará referencia al objeto al que esta vinculado el método
         self.width * self.height
     }
 
@@ -357,7 +357,7 @@ impl Object {
     }
 }
 
-//Podemos crear otra implementación para tener ahi las funciones relacionados en esta.
+//Podemos crear otra implementación para tener ahi las funciones relacionadas.
 impl Object {
     
     //podemos crear lo que es llamado funciones relacionadas:
@@ -403,8 +403,236 @@ use std::fmt;
 //luego tendriamos que crear otra "impl":
 impl fmt::Display for Object {
 
+    //writer
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {}) and Area: {}", self.width, self.height, self.area());
     }
+}
+```
+
+## Control Flow, Conditionals and Patters Matching
+
+Los operadores condicionales en Rust son:
+
+```Rust
+//igual a:
+==
+//no igual a:
+!=
+//mayor que:
+>
+//menor que:
+<
+//menor o igual que:
+<=
+//mayor o igual que:
+>=
+```
+
+### if statement
+
+```Rust
+fn main() {
+    fn () -> ()
+
+    let n = 2;
+
+    if < 5 {
+        println!("true");
+    } else {
+        println!("false");
+    }
+
+    //tambien podemos crear varios else:
+
+    let m = 6;
+
+    if m % 4 == 0 {
+        println!("m is divisible by 4");
+    } else if m % 3 == 0 {
+        println!("m is divisible by 3");
+    } else if m % 2 == 0 {
+        println!("m is divisible by 2");
+    } else {
+        println!("m is not divisible by 4, 3, or 2");
+    }
+
+    //tambien podemos usar if-else statements en bindings
+    //ya que if-else statements son expresiones en Rust
+    let c = true;
+
+    //las expresiones if-else siempre deben resolver en un booleano
+    let n = if c { //aquí no habría problema ya que c es una variable booleana 
+        50
+    } else {
+        76
+    };
+
+    println!("n : {}", n);
+
+    //También hay que saber que si la expresión if-else va a retornar algo deben ambas ser del mismo tipo
+    //Ej:
+
+    let c = false;
+
+    let n = if c {
+        50
+    } else {
+        "String" //ERROR! if-else have incompatible types
+    }
+}
+```
+
+### loops
+
+```Rust
+fn main() {
+    //loop infinito
+    loop {
+        println!("infinite");
+    }
+
+    //tambien podemos usar loops que no son infinitos
+    let mut c = 0;
+
+    loop {
+        println!("finite");
+        c += 1;
+
+        if c >= 10 {
+            break;
+        }
+    }
+
+    //podemos poner labels en los loops
+
+    'a: loop {
+        println!("loop a");
+        'b: loop {
+            println!("loop b");
+            'c: loop {
+                println!("loop c");
+
+                //lo interesante de los labels es que podemos romper un loop en especifico con "break"
+                break
+
+                /*
+                    lo que pasaría aquí es que comenzaría corriendo el loop a
+                    luego pasaría al loop b, luego al c, en el loop c se saldría
+                    y volvería al loop b, luego al c, luego al b y luego al c y asi
+                    infinitamente.
+                    
+                    pero si ponemos:
+
+                    break 'b
+
+                    dentro del loop c. volvería de vuelta al loop a de nuevo, luego al b, luego al c, luego al a, al
+                    b, al c, etc
+                */
+
+                //También tenemos la keyword "continue":
+
+                if true {
+                    //lo que pasaría es que llegaría a 'c' se detendría, evaluaría si es verdadero y continuaría
+                    continue
+                } else {
+                    break
+                }
+                //se repetiría a,b,c infinitamente
+            }
+        }
+    }
+
+    //También podemos usar loop statements en bindings
+    let x = loop {
+        break 10; //asignaría el numero 10 a la variable 'x'
+    };
+
+    println!("x: {}", x); //return 'x: 10'
+
+
+    //Tenemos tambien el loop while:
+    let mut n = 10;
+
+    while n != 0 {
+        println!("{}!", n);
+
+        n = n - 1;
+    }
+
+    //For loop:
+    let a  = vec![10, 20, 30, 40, 50];
+    //iteraría por cada elemento del vector 'a'
+    for i in a {
+        println!("i: {}", i);
+    }
+
+    //podemos hacer que el loop for itere N cantidad de veces:
+    for i in 1..101 { //iteraría 100 veces, ya que se están usando dos puntos (1..101) "exclusive range"
+        println!("i: {}", i);
+    }
+
+}
+```
+
+### match statement
+
+```Rust
+fn main() {
+    let x = 5;
+
+    //es similar al switch de otros lenguajes
+    match x {
+        1 => println!("one"),
+        2 => println!("two"),
+        3 => println!("three"),
+        4 => println!("four"),
+        5 => println!("five"),
+        _ => println!("something else"), //debemos tener al menos un case para todos los integers
+        //por lo que se usa un "general case _" para todos los demás integers
+    }
+
+    let n = 15;
+    match n {
+        1 => println!("One!"),
+        2 | 3 | 5 | 7 | 11 => println!("This is a prime"), //múltiples cases en una linea
+        13...19 => println!("A teen"),
+        _ => println!("Ain't special"), //case para todos los demás números
+    }
+
+    let pair = (0, -2); //tupla
+    match pair {
+        (0, y) => println!("y: {}", y), //match the tuple based in one value of the tuple | y toma el valor '-2'
+        (x, 0) => println!("x: {}", x), //si el segundo valor de la tupla fuera 0 se ejecutaría esta linea
+        _      => println!("No match"),
+    }
+
+    let pair = (5, -5);
+    match pair {
+        //toman los dos valores de la tupla y luego usan el if statement
+        (x, y) if x == y => println!("Equal"),
+        (x, y) if x + y == 0 => println!("Equal zero"), //se ejecutaría esta linea
+        (x, _) if x % 2 == 0 => println!("X is even"),
+        _ => println!("No match"),
+    }
+
+    let p = 5;
+    match p {
+        //evalua si el numero '5' esta en el rango 
+        n @ 1 ... 12 => println!("n: {}", n), // '5' es asignado a 'n'
+        n @ 13 ... 19 => println!("n: {}", n),
+        _ => println!("no match"),
+    }
+
+    //tambien podemos usar las match statements como expresions
+    let p = 5;
+
+    let n = match p {
+        n @ 1...12 => n,
+        n @ 13...19 => n,
+        _ => 0,
+    };
+
+    println!("n: {}", n);
 }
 ```
