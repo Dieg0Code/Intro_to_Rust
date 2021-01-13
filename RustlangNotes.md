@@ -214,7 +214,9 @@ let s = "String"; // slice of string, type str
 //que declararla de esta otra manera
 let ss = String::from("String!"); // type String
 
-/*las string no son técnicamente tipos literales en Rust, en vez de eso son mas como arrays o tuplas en el sentido de que están compuestas por diferentes caracteres
+/*las string no son técnicamente tipos literales en 
+Rust, en vez de eso son mas como arrays o tuplas en 
+el sentido de que están compuestas por diferentes caracteres
 */
 
 //podemos convertir la variable s en una string de la siguiente manera
@@ -234,7 +236,7 @@ println!("{}", s);// return Hello, World!
 
 ## Ownership and Borrowing
 
-Si piensas en lenguajes como C++ y C en ellos tiene la habilidad de manejar directa e indirectamente la memoria, estos tienen los punteros y las referencias, pero a la vez hay un poco de peligro en el ser capaz de poder manejar manualmente los punteros y las referencias, si creas dos punteros los cuales apuntan a la misma pieza de data y luego quitas esa referencia puedes causar una corrupción en la memoria, por eso los lenguajes de alto nivel como Java, C#, Python y Ruby usan el conocido "garbage collector" este es en esencia un algoritmo que va por ahi y encuentra todos los espacios libres en memoria y los libera automáticamente. En Rust tenemos algo en el medio, el llamado **"Ownership"**, este sigue 3 reglas.
+Si piensas en lenguajes como C++ y C en ellos tienes la habilidad de manejar directa e indirectamente la memoria, estos tienen los punteros y las referencias, pero a la vez hay un poco de peligro en el ser capaz de poder manejar manualmente los punteros y las referencias, si creas dos punteros los cuales apuntan a la misma pieza de data y luego quitas esa referencia puedes causar una corrupción en la memoria, por eso los lenguajes de alto nivel como Java, C#, Python y Ruby usan el conocido "garbage collector" este es en esencia un algoritmo que va por ahi y encuentra todos los espacios libres en memoria y los libera automáticamente. En Rust tenemos algo en el medio, el llamado **"Ownership"**, este sigue 3 reglas.
 
 Cada variable tiene un valor y la variable en si misma es llamada Owner
 
@@ -304,5 +306,89 @@ fn main() {
     //thats beacuse they not actually being moved instead they're being copied
 
     println!("we have a: {} and b: {}", a, b);
+}
+```
+
+## Structs, Methods, Functions, Related Functions and the Display/Debug Traits
+
+Si vienes de lenguajes orientados a objetos seguramente encontraras una similitud entre "structs" y los objetos.
+
+```Rust
+//Digamos que queremos modelar un objeto que tiene un ancho y un alto
+
+struct Object { //se usaría la keyword struct y la primera letra mayuscula para el tipo
+    width: u32,
+    height: u32,
+
+}
+
+fn area(obj: &Object) -> u32 {
+    obj.width * obj.height // no es estrictamente necesario poner return ya que Rust retornara siempre la ultima linea de una función
+}
+
+fn main() {
+    let o = Object {
+        width: 35,
+        height: 55,
+    };
+
+    println!("{}x{} with area: {}", o.width, o.height, area(&o));
+}
+```
+
+```Rust
+//Para crear métodos:
+impl Object {
+    fn area(obj: &Object) -> u32 {
+        obj.width * obj.height
+    }
+}
+
+//Podemos simplificarlo aun mas:
+impl Object {
+
+    fn area(&self) -> u32 { //self automáticamente hará referencia al objeto al que esta vinculado
+        self.width * self.height
+    }
+
+     //Podemos poner los prints en una funcion:
+    fn show(&self) {
+        println!("{}x{} with area: {}", self.width, self.height, self.area());
+    }
+}
+
+//Podemos crear otra implementación para tener ahi las funciones relacionados en esta.
+impl Object {
+    
+    //podemos crear lo que es llamado funciones relacionadas:
+    fn new(width :u32, height: u32) -> Object {
+        Object {
+            width,
+            height,
+        }
+    }
+}
+
+fn main() {
+    let o = Object {
+        width: 35,
+        height: 55,
+    };
+
+    //Para ganar acceso a la función new
+    let obj = Object::new(57, 83);//asi podemos usarla como a cualquier otra función
+
+    
+    o.show();
+    obj.show();
+
+    println!("{:?}", o); //si intentásemos imprimir el objeto con la flag ":?" nos dará un error
+    //Para solucionar eso debemos añadir una notación al objeto
+    //Ej:
+    #[derive(Debug)]
+    struct Object {
+        width: u32,
+        height: u32,
+    }
 }
 ```
