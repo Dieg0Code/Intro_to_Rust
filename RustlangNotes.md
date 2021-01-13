@@ -391,4 +391,20 @@ fn main() {
         height: u32,
     }
 }
+//Entonces podríamos imprimir por pantalla sin problemas el objeto
+//Sin embargo no podemos imprimir el objeto sin la flag ":?"
+println!("{}", o);
+println!("{}", obj);
+
+//Para poder imprimir por pantalla el objeto sin la flag ":?" tendríamos que hacer lo siguiente:
+
+use std::fmt;
+
+//luego tendriamos que crear otra "impl":
+impl fmt::Display for Object {
+
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {}) and Area: {}", self.width, self.height, self.area());
+    }
+}
 ```
