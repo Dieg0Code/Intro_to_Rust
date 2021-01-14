@@ -771,3 +771,187 @@ fn main() {
     //Si tuviésemos un valor el cual potencialmente podría ser nulo deberíamos usar un "Option"
 }
 ```
+
+## Vectors, HashMaps, Casting, If-Let, While-Let, and the Result Enum
+
+```Rust
+fn main() {
+    //vector, los vectors son arrays que pueden cambiar de tamaño(resizable arrays)
+    let x = vec![1,2,3,4];
+    // un vector esta representado por tres piezas de data, un pointer a la data, la capacidad(cuanta memoria ocupa)
+    // y su longitud
+
+    //podemos crear vectores con el método new:
+    let mut v = Vec::new();
+
+    //pone un nuevo valor en el vector
+    v.push(5);
+    v.push(6);
+    v.push(7);
+    v.push(8);
+
+    for i in &v {
+        println!("{}", i);
+    }
+
+    // Los vectores solo pueden tener solo un tipo de valor dentro de ellos
+
+    println!("{:?} {} {}", &v, v.len(), v.capacity()); //return [5,6,7,8] 4 4
+    // pero si ponemos otro valor dentro del vector
+    v.push(10);
+    // el valor que retornará será [5,6,7,8,10] 5 8
+    // esto es porque la capacidad va creciendo en múltiplos de 4 (4,8,16,32,etc)
+
+    // pop the last value of the vector
+    println!("{:?}", v.pop()); //return "Some(10)"
+
+    // tipos de datos en un vector
+    let mut v: Vec<i32> = Vec::new();
+
+    // we can also embed a enum inside of a vector
+    #[derive(Debug)]
+    enum Example {
+        Float(f64),
+        Int(i32),
+        Text(String),
+    }
+
+    fn main() {
+        let r = vec![
+            Example::Int(142),
+            Example::Float(12.32),
+            Example::Text(String::from("string")),
+        ];
+
+        println!("{:?}", &r);// return [Int(142), Float(12.32), Text("string")] 
+    }
+}
+```
+
+### HashMaps
+
+```Rust
+
+// The type HashMaps store a mapping of keys map to a value
+// en python los HashMaps vendrían siendo los diccionarios
+use std::collections::HashMap;
+
+fn main() {
+    let mut hm = HashMap::new();
+
+    // al igual que con los vectores los tipos de datos almacenados deben ser consistentes
+    hm.insert(String::from("random"), 12); // key type String, value type int
+    hm.insert(String::from("string"), 49); // si pusiese un float aquí daría error
+
+    for (k, v) in &hm {
+        println!("{}: {}", k, v);
+    } // return random: 12
+      // String: 49
+
+    // podemos usar la función get para ganar acceso a un elemento dentro del HashMap
+    match hm.get(&String::from("random")) { // lo que retorna la función get es un Option por eso debemos usar un match
+        Some(&n) => println!("{}", n), // return 12
+        _ => println!("no match"),
+    }
+
+    // podemos usar la función remove para eliminar no solo la key sino tambien el value
+    hm.remove(&String::from("string")); // la key esta siempre asociada al value, por eso se eliminan los dos
+
+}
+```
+
+### If-Let
+
+```Rust
+fn main() {
+
+    let s = Some('c');
+
+    // forma verbosa
+    match s {
+        Some(i) => println!("{}", i),
+        _ => {}
+    }
+
+    // forma menos verbosa
+    if let Some(i) = s {
+        println!("{}", i);
+    }
+}
+```
+
+### While-Let
+
+```Rust
+
+    // forma verbosa
+    let mut s = Some(0);
+
+    loop {
+        match s {
+            Some(i) => if i > 19 {
+                println!("Quit");
+                s = None;
+            } else {
+                println!("{}", i);
+                s = Some(i + 2);
+            },
+            _ => {
+                break;
+            }
+        }
+    }
+
+    //forma menos verbosa de hacer lo anterior
+    while let Some(i) = s {
+        if i > 19 {
+            println!("Quit");
+            s = None;
+        } else {
+            println!("{}", i);
+            s = Some(i + 2);
+        }
+    }
+
+```
+
+### Casting
+
+```Rust
+    // Rust provee algo llamado conversion de datos no implícita (non implicit type conversion) o coercion
+    // entre datos primitivos en ves de conversion explicita (explicit conversion) o casting
+
+    let f = 24.4321_f32;
+    let i = f as u8;
+    let c = i as char;
+
+    println!("{} {} {}", f, i, c);
+
+    // si queremos convertir un int en un char solo podemos hacerlo desde el 0 hasta el 255
+    println!("{}", 255 as char);
+```
+
+### Result Enum
+
+```Rust
+
+// Por lo general es usados para checar si hay errores
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+// Ej de Result Enum
+use std::fs::File;
+
+fn main() {
+    let f = File::open("test.txt");
+
+    let f = match => {
+        Ok(file) => file,
+        Err(error) => {
+            panic!("There was a problem opening the file: {:?}", error)
+        },
+    };
+}
+```
