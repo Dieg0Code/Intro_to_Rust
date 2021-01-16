@@ -796,10 +796,10 @@ fn main() {
 
     // Los vectores solo pueden tener solo un tipo de valor dentro de ellos
 
-    println!("{:?} {} {}", &v, v.len(), v.capacity()); //return [5,6,7,8] 4 4
+    println!("{:?} {} {}", &v, v.len(), v.capacity()); //return '[5,6,7,8] 4 4'
     // pero si ponemos otro valor dentro del vector
     v.push(10);
-    // el valor que retornará será [5,6,7,8,10] 5 8
+    // el valor que retornará será '[5,6,7,8,10] 5 8'
     // esto es porque la capacidad va creciendo en múltiplos de 4 (4,8,16,32,etc)
 
     // pop the last value of the vector
@@ -823,7 +823,7 @@ fn main() {
             Example::Text(String::from("string")),
         ];
 
-        println!("{:?}", &r);// return [Int(142), Float(12.32), Text("string")] 
+        println!("{:?}", &r);// return '[Int(142), Float(12.32), Text("string")]' 
     }
 }
 ```
@@ -845,12 +845,12 @@ fn main() {
 
     for (k, v) in &hm {
         println!("{}: {}", k, v);
-    } // return random: 12
-      // String: 49
+    } // return 'random: 12'
+      //        'String: 49'
 
     // podemos usar la función get para ganar acceso a un elemento dentro del HashMap
     match hm.get(&String::from("random")) { // lo que retorna la función get es un Option por eso debemos usar un match
-        Some(&n) => println!("{}", n), // return 12
+        Some(&n) => println!("{}", n), // return '12'
         _ => println!("no match"),
     }
 
