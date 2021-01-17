@@ -955,3 +955,189 @@ fn main() {
     };
 }
 ```
+
+## Traits and Generic Types
+
+```Rust
+// Son una forma de definir un comportamiento compartido entre múltiples diferentes sets de datos
+// los "Traits" son muy similares a lo que vendría siendo las "interfaces" en otros lenguajes
+// nos permiten definir como una función debería verse, tambien nos permiten implementar esa función en varios tipos de datos diferentes.
+
+trait Shape {
+    fn area(&self) -> u32;
+}
+
+struct Rectangle {
+    x: u32,
+    y: u32,
+}
+
+struct Circle {
+    radius: f64,
+}
+
+impl Shape for Rectangle {
+    fn area(&self) -> u32 {
+        self.x * self.y
+    }
+}
+
+impl Shape for Circle {
+    fn area(&self) -> u32 {
+        (3.141 * self.radius * self .radius) as u32
+    }
+}
+
+fn main() {
+    let c = Circle {radius: 100.132};
+    let r = Rectangle {x: 30, y: 20};
+    println!("{} {}", c.area(), r.area());
+}
+
+// tambien tenemos las "Dirive annotations" las cuales nos permiten implementar varios "traits" diferentes
+// el compilador es capaz de proveer implementaciones básicas para "traits" específicos.
+
+#[derive(Debug, Clone, Copy)]
+struct A(i32);
+struct B(i32);
+
+// "Clone" es interesante porque nos da un poco mas de control sobre como las variables funcionan dentro
+// del sistema de "Ownership"
+
+fn main() {
+    let a = A(32);
+    let b = B(12.13);
+    let c = a;
+    println!("{:?}", a); //daría error en esta linea porque y 'a' ya no referencia a 'A(32);'
+    // para solucionar el error podemos escribir a.clone() ya que estamos usando la "annotation" 'Clone'
+    // quedaría asi:
+    let c = a.clone();// asi clonamos la variable 'a' para que siga haciendo referencia a 'A(32);'
+    // aunque tambien podemos hacerlo de otra manera con la anotación 'Copy'
+    // lo que significa esta anotación es que cada vez que una función o un variable pida prestado un dato
+    //  este sera automáticamente copiado
+    // asi ya no es necesario usar:
+    let c = a.clone();
+    // sino que simplemente podemos escribir:
+    let a = A(32);
+    let c = a;
+    println!("{:?}", a);// y no nos dará ningún error
+
+    // tambien tenemos diferentes 'traits' como:
+    // #[derive(Eq, PartialEq, PartialOrd, Ord)] 
+}
+```
+
+Podemos usar los "traits" para sobrecargar operadores:
+
+```Rust
+ use std::ops;
+
+    struct A;
+    struct B;
+    #[derive(Debug)]
+    struct AB;
+    #[derive(Debug)]
+    struct BA;
+
+    impl ops::Add<B> for A {
+        type Output = AB;
+
+        fn add(self, _rhs: B) -> {
+            AB
+        }
+    }
+
+    impl ops::Add<A> for B {
+        type Output = BA;
+
+        fn add(self, _rhs: A) -> BA {
+            BA
+        }
+    }
+
+    fn main() {
+        println!("{:?}", A + B);
+        println!("{:?}", B + A);
+        // si intentase sumar A con A o B con B me daría error porque no implemente esas sumas
+        // esto puede ser util cuando queremos sobrecargar los operadores básicos
+    }
+```
+
+Drop:
+
+```Rust
+// Drop nos permite especificar al compilador cuando queremos que dropee un valor de la memoria
+struct A {
+    a: String,
+}
+
+impl Drop for A {
+    fn drop(&mut self) {
+        println!("dropped {}", self.a)
+    }
+}
+
+// lo interesante de Drop es que sera llamado automáticamente cuando una variable sea dropeada
+// incluso si nosotros no lo usamos explícitamente sera llamado
+
+fn main() {
+    let a = A{a: String::from("A")};
+    {
+        let b = A{a: String::from("B")};
+        {
+            let c = A{a: String::from("C")};
+
+            println!("leaving inner scope 2");
+        }
+        println!("leaving inner scope 1");
+    }
+    drop(a); // especifica que queremos dropear a antes de que termine el programa
+    println!("program ending");
+}
+```
+
+Iterator:
+
+```Rust
+struct Fib {
+    c: u32,
+    n: u32,
+}
+
+// Se usa para implementar 'iteradores' en colecciones como arrays, etc.
+impl Iterator for Fib {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<u32> {
+        let n = self.c + self.n;
+        self.c = self.n;
+        self.n = n;
+
+        Some(self.c)
+    }
+}
+
+// tenemos varios métodos que podemos usar en nuestros 'iteradores'
+
+fn fib() -> Fib {
+    Fib{c: 1, n: 1}
+}
+
+fn main() {
+    for j in fib().take(10) {
+        println!("{}", j);
+    }
+
+    for j in fib().skip(14).take(10) {// skip, evita los primeros 14 elementos de la colección, luego toma los primeros 10 y itera sobre ellos
+        println!("{}", j);
+    }
+
+    let mut f = fib();
+
+    println!("{:?}", f.next());
+    println!("{:?}", f.next());
+    println!("{:?}", f.next());
+    println!("{:?}", f.next());
+    println!("{:?}", f.next()); 
+}
+```
