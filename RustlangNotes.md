@@ -1058,7 +1058,7 @@ Podemos usar los "traits" para sobrecargar operadores:
     fn main() {
         println!("{:?}", A + B);
         println!("{:?}", B + A);
-        // si intentase sumar A con A o B con B me daría error porque no implemente esas sumas
+        // si intentase sumar 'A' con 'A' o 'B' con 'B' me daría error porque no implemente esas sumas
         // esto puede ser util cuando queremos sobrecargar los operadores básicos
     }
 ```
@@ -1091,7 +1091,7 @@ fn main() {
         }
         println!("leaving inner scope 1");
     }
-    drop(a); // especifica que queremos dropear a antes de que termine el programa
+    drop(a); // especifica que queremos dropear 'a' antes de que termine el programa
     println!("program ending");
 }
 ```
@@ -1139,5 +1139,99 @@ fn main() {
     println!("{:?}", f.next());
     println!("{:?}", f.next());
     println!("{:?}", f.next()); 
+}
+```
+
+Generics
+
+```Rust
+// lo que permiten los generics es generalizar el tipo de dato de una 'struct' especifica
+struct Square<T> {
+    x: T,
+}
+
+fn main() {
+    let s = Square{x: 10};
+    let s = Square{x: 1.0};
+    let s = Square{x: "Hello"};
+    let s = Square{x: 'c'};
+}
+// los 'generics' son muy útiles cuando queremos reducir los duplicados en el código
+```
+
+Podemos usar "generics" dentro de funciones:
+
+```Rust
+use std::fmt;
+fn p<T: fmt::Debug>(x: T) { // esta función podría imprimir cualquier tipo de dato
+    println!("{:?}", x);
+}
+
+// tambien podemos usar 'generics' dentro de 'impls'
+struct A<T> {
+    x: T,
+}
+
+impl <T> A<T> { // el 'generic' esta escrito dos veces aquí porque 'A<T>' hace referencia al 'struct' y la <T> es el 'generic' de este bloque
+    fn item(&self) -> &T {
+        &self.x
+    }
+}
+
+// podemos usar 'generics' para definir 'patterns' para 'structs' (aguante el Espanglish)
+struct A<U, V> { //debido a que hay dos 'generics' las variables 'x', 'y' pueden tener diferentes tipos de datos
+    x: U,
+    y: V,
+}
+
+struct B<V> {// pero a  quí ya que hay solo un 'generic' ambos deben tener el mismo tipo de dato, cualquier tipo, pero ambas el mismo
+    x: V,
+    y: V,
+}
+
+fn main() {
+    p(10);
+    p(String::from("String"));
+
+    let a = A{x: "Hello"};
+
+    a.item();
+}
+```
+
+```Rust
+use fmt::ops::Mul;
+
+trait Shape<T> {
+    fn area(&self) -> T;
+}
+
+struct Rectangle <T: Mul> {
+    x: T,
+    y: T,
+}
+/* 
+impl <T: Copy> Shape<T> for Rectangle<T>
+    where T: Mul<Output = T>, {
+        fn area(&self) -> T {
+            self.x * self.y
+        }
+    
+} 
+*/
+
+//otra forma de escribir la 'impl' anterior es:
+impl <T:Mul<Output = T> + Copy> Shape<T> for Rectangle<T>
+{
+    fn area(&self) -> T {
+        self.x * self.y
+    }
+}
+
+fn main() {
+    let r = Rectangle {x: 10, y: 20};
+    let r2 = Rectangle {x: 10.10, y: 20.31};
+
+    println!("{} {}", r.area(), r2.area());
 }
 ```
