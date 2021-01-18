@@ -1379,3 +1379,82 @@ fn main() {
     x();
 }
 ```
+
+Las **closures** son especialmente útiles cuando trabajamos con iteradores
+
+```Rust
+fn main() {
+    let v = vec![1,2,3];
+
+    println!("v {}", v.iter().any(|&x| x != 2));// itera sobre el vector luego checka si hay algún elemento que sea diferente de 2
+    //return v true, ya que hay 2 elementos en el vector que son diferentes a 2
+}
+```
+
+```Rust
+fn main() {
+    let v = vec![1,2,3];
+
+    for i in v.iter() {
+        println!("{}", i);
+    }
+}
+```
+
+```Rust
+trait Iterator {
+    type Item;
+
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+fn main() {
+    let v = vec![1,2,3];
+    v.iter().next();
+}
+```
+
+```Rust
+fn is_even(n: u32) -> bool {
+    n % 2 == 0
+}
+
+fn main() {
+    let top = 10000;
+    let mut c = 0;
+
+    // en Rust los iteradores son llamados "lasy iterators" esto quiere decir que podemos crear un loop
+    // como este el cual tiende a infinito y aun asi no romperá el programa
+    // El compilador no resolverá cosas hasta que lo necesita
+    for n in 0.. {
+        let x = n * n;
+
+        if x >= top {
+            break;
+        } else if is_even(x) {
+            c += x;
+        }
+    }
+    println!("{}", c);
+}
+```
+
+Podemos crear el mismo loop de una forma mas funcional usando **closures**:
+
+```Rust
+fn is_even(n: u32) -> bool {
+    n % 2 == 0
+}
+
+fn main() {
+    let s: u32 =
+    (0..).map(|n| n*n)// mapea la closure
+    .take_while(|&n| n < 10000)
+    .filter(|&n| is_even(n))// filtra los valores usando la función 'is_even()'
+    .fold(0, |s, i| s + 1);// ejecuta la closure y suma todos los valores
+
+    println!("{}", s);
+    // esto es equivalente al bloque anterior, solo que aquí usamos funciones de orden superior y closures
+    // es la forma funcional de hacerlo.
+}
+```
