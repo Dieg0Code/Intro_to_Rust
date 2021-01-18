@@ -1235,3 +1235,147 @@ fn main() {
     println!("{} {}", r.area(), r2.area());
 }
 ```
+
+## Closures, the Box Pointer and Iterators
+
+Un pointer es una variable que en vez de contener un dato, contiene una dirección en memoria, en esencia un pointer apunta hacia algún otro dato.
+Los "smart pointers" por otro lado son estructuras de datos que actúan como pointers pero tienen metadata adicional. El "smart pointer" que vamos a ver es "the box smart pointer", es el mas util que tiene Rust. Este nos permite asignar datos al ["Heap"](https://codingornot.com/diferencias-entre-heap-y-stack) cada dato primitivo en Rust esta asignado automáticamente al ["Stack"](https://codingornot.com/diferencias-entre-heap-y-stack) pero si lo envolvemos/usamos una "box" estará asignado al **Heap**.
+
+```Rust
+// Box
+fn main() {
+    let b = Box::new(10);
+    println!("b = {}", b);
+}
+```
+
+El mejor ejemplo que podemos usar para explicar el tipo "Box" es implementar algo que es llamado **consList**. **consList** es una estructura de datos que viene del lenguaje de programación **lisp**, en **lisp** hay una función llamada **cons** (viene de contruct) la cual podemos llamar para crear una nueva lista, lo que es esta **consList** es una llamada recursiva al operador **cons** una y otra ves hasta que crea una lista.
+
+Podemos modelar ese comportamiento asi:
+
+```Rust
+enum List {
+    Cons(i32, Box::new<List>), // si no usamos el 'Box' dará error porque almacenara 'List' en la 'Stack'/pila 
+    End,
+}
+
+use List::Cons;
+use List::End;
+
+fn main() {
+    let l = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(End)))))); //esto crearía una lista
+}
+```
+
+```Rust
+fn main() {
+    let y = 4;
+    let x = &y;
+    let z = Box:new(y);
+
+    if *x == *z {
+        println!("true");// se imprime "true"
+    }
+}
+```
+
+"Box" se vuelve muy util cuando usamos **Closures**
+
+### Closures
+
+"Closures" son funciones anónimas las cuales puedes guardar en una variable y pasarla como argumento a otra función, puedes incluso tener una función que crea una "Closure"
+
+```Rust
+//fn f(i: i32) -> i32 {i + 1} asi es como se crearía una función normalmente
+
+fn main() {
+    //podemos crear una función anónima usando el siguiente formato
+    let f = |i| i + 1;
+    let x = 10;
+    println!("{}", f(x));
+
+    // podemos crear closures que no toman valores
+    let p = || println!("this is a closure");
+    p(); // return 'this is a closure'
+}
+```
+
+Las "closures" son heredadamente flexibles, haremos lo que la funcionalidad requiera para hacer que la **closure** funcione sin "annotations". Esto nos permite capturar, adaptar flexiblemente al caso de uso, a veces mover y a veces prestar variables. Las "closures" pueden capturar variables en varias formas, pero tienen una preferencia por capturar variables por referencia.
+
+```Rust
+fn main() {
+    let mut c = 0;// el scope de 'c' esta dentro de la función 'main'
+
+    let mut inc = || { // esta función toma prestada la variable 'c' del scope de fuera
+        c += 1;
+        println!("incremented by 1: {}", c);
+    };
+
+    inc();
+    inc();
+    inc();
+}
+```
+
+```Rust
+fn run<F>(f: F)
+where F: Fn() {// F debe ser una función(Fn())
+    f();
+}
+
+fn add3<F>(f: F) ->
+where F: Fn(i32) -> {
+    f(3)
+}
+
+// podemos usar closures dentro de structs
+struct A<F: Fn(i32) -> i32 > { // Fn() indica que el generic debe ser tratado como una función
+    f: F
+}
+
+fn main() {
+    let p = || println!("hello from run function!");
+    run(p);
+
+    let x = |i| i * 10;
+
+    //println!("3 * 10 {}", add3(x));
+
+    let a = A {
+        f: x, // con esto podemos guardar la closure 'x' dentro de la struct 'A'
+    };
+} 
+```
+
+```Rust
+fn run<F>(f: F)
+where F: Fn() {
+    f();
+}
+
+fn pr() {
+    println!("this is a normal function!");
+}
+
+fn main() {
+    let p = || println!("hello from run function")
+    run(p);
+    run(pr);
+}
+```
+
+Podemos tambien usar **closures** como parámetros de output. Esto en teoria es problemático porque se supone que Rust solo devuelve datos concretos no genéricos. Las closures son por definición tipos anónimos por lo que retornar una **closure** es solo posible usando el **smart pointer** **"Box"**.
+
+```Rust
+fn create() -> Box<Fn()> {
+    Box::new(move || println!("this is a closure in a box!!")) // move lo que dice es que todos los valores dentro
+    // de la closure deben ser referenciados por valor en vez de por referencia
+    // tan pronto como salgamos de la función todos los valores creados dentro de esta morirán en el scope 
+    // y no serán pasados al scope de la función 'main'
+    // al usar la keyword 'move' prevenimos que eso pase 
+
+fn main() {
+    let x = create();
+    x();
+}
+```
