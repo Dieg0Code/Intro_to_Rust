@@ -1568,3 +1568,174 @@ Para llamar a una librería externa:
 ```Rust
 extern crate name;
 ```
+
+## Lifetimes
+
+Cada referencia en **Rust** tiene un **Lifetime**, Lifetime en esencia es el scope en el cual una referencia es valida. En Rust la mayoría de **Lifetimes references** son implícitas o son inferidas de la misma forma en la que los tipos pueden ser inferidos, tambien podemos usar **annotations** para definir **Lifetimes** manualmente.
+
+```Rust
+fn main() {
+    let x;
+    {
+        let y = 10;
+        x = &y;
+    } // aquí daría error porque al tratar de imprimir 'x' fuera del scope se trata de hacer referencia a 'y'
+      // pero 'y' muere en el scope en el que es declarada
+
+    println!("{}", x);
+}
+```
+
+La parte del compilador que lidia con **Lifetimes** es llamado . **Borrow checker** determina si todos los prestamos de variables son validos o no, en el caso anterior el préstamo `x = &y` no es valido para el scope en el que se declaro.
+
+Para que sea valido debemos reescribirlo de esta manera:
+
+```Rust
+fn main() {
+    let y = 10;
+    let x;
+
+    x = &y;
+
+    println!("{}", x);
+}
+```
+
+```Rust
+fn pr(x: &str, y: &str) -> &str { // nos daría un error aquí (missing lifetime specifier)
+                                  // el problema es que el tipo que se retorno es creado dentro del scope
+    if x.len() == y.len() {       // de la función, no podemos garantizar que el borrow (-> &str) va a existir
+        x                         // el tiempo suficiente para ser retornado por la función main
+    } else {
+        y
+    }
+}
+
+fn main() {
+
+}
+```
+
+Para solucionarlo:
+
+```Rust
+// debemos poner un Lifetime specifier
+fn pr<'a>(x: &'a str, y: &'a str) -> &'a str{ // 'a es el lifetime specifier 
+    if x.len() == y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+// la razone de porque se va el error es porque estamos diciendo que 'a' y 'b' tienen el mismo lifetime
+// que el output str, lo que significa que debería existir hasta que la función main termine
+fn main() {
+    let a = "a string";
+    let b = "b string";
+
+    let c = pr(a, b);
+
+    println!("{}", c);
+}
+```
+
+La forma en la que especificamos **Lifetimes** depende de lo que la función este haciendo, si cambiamos la implementación de la función para que retorne el primer argumento en vez de uno de los otros entonces no tendríamos que especificar el **lifetime** o el segundo parámetro ('y'):
+
+```Rust
+// Aquí no daria error
+fn pr<'a>(x: &'a str, y: &str) -> &'a str {
+    x
+}
+```
+
+Cuando retornamos una referencia desde una función el **lifetime** del return necesita coincidir con el **lifetime** de uno de los argumentos. Si la referencia que se retorna no refiere a uno de los argumentos la única otra posibilidad es que haga referencia a un valor creado en esta función lo cual seria una referencia peligrosa.
+
+También podemos usar referencia dentro de **structs**.
+
+```Rust
+// ya que la struct tiene almacena una referencia necesita tener una lifetime annotation
+struct A<'a> {
+    x: &'a str,
+}
+
+fn main() {
+    let a = A{x: "Hello"};
+}
+```
+
+Si tenemos 2 **lifetimes** dentro del **struct** podemos tener 2 **lifetimes** independientes
+
+```Rust
+struct A<'a, 'b> {
+    x: &'a str,
+    y: &'b str,
+}
+
+fn main() {
+    let a = A{x: "Hello", y: "There"};
+}
+```
+
+Es importante saber que en **Rust** cada referencia tiene un **lifetime annotation** incluso si no especificamos una nosotros sigue existiendo en el compilador, eso es lo que se conoce como **lifetime inference** o **lifetime allusion**. **Allusion** no prefiere una inferencia completa, si Rust aplica deterministicamente aplica esta regla (**lifetime allusion**) pero aun asi sigue habiendo una ambigüedad en el **lifetime** actual entonces debemos declararlo explícitamente.
+
+El compilador aplica **allusion** basado en unas pocas reglas, si tenemos una función con **una** referencia entonces tendrá exactamente **un** parámetro
+
+```Rust
+struct A<'a, 'b> {
+    x: &'a str,
+    x: &'b str,
+}
+
+fn ab<'a, 'b>(x: &'a i32, y: &'b i32) {}
+/* 
+
+fn a<'a>(s: &'a str) -> &'a str {
+    s
+} 
+
+Colocar lifetime parameters en la funciona anterior es redundante porque al ser uno solo el compilador lo inferirá por nosotros
+*/
+// la forma correcta seria simplemente
+fn a(s: &str) -> &str {
+    s
+}
+
+fn main() {
+    let a = A{x: "Hello", y: "There"};
+}
+```
+
+Hay múltiples **input lifetime parameters** hay uno que es una referencia a si mismo o a un *mutable self* entonces el **lifetime** de *self* es asignado a todos los parámetros de output.
+Asique basados en la ultima regla sabemos que podemos asignar **lifetimes** a métodos.
+
+```Rust
+struct A<'a> {
+    x: &'a str,
+}
+
+impl <'a> A<'a> {
+    fn slf(&self) -> &str {
+        self.x
+    }
+}
+
+// Básicamente muchas de las formas en las que escribimos lifetimes en Rust son muy similares a como
+// escribimos 'generics' en Rust
+
+fn main() {
+    let a = A{x: "Hello"};
+}
+```
+
+Hay un lifetime mas el cual es importante, el **static lifetime**, este es un **lifetime** especial el cual estará durante toda la duración del programa:
+
+```Rust
+fn main() {
+    let s: &'static str = "The String";
+    // hay que evitar usar este lifetime a menos que sea necesario usarlo ya que hará que el programa sea mas lento
+    // si es que hay varios de estos
+    // si no encontramos la solución a una referencia potencialmente peligros entonces deberíamos usar el 
+    // 'static lifetime'
+}
+```
