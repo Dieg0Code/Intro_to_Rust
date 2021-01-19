@@ -1458,3 +1458,113 @@ fn main() {
     // es la forma funcional de hacerlo.
 }
 ```
+
+## Modules and Lifetimes
+
+Para ver los módulos debemos crear una biblioteca, para hacer eso escribimos en la terminal `cargo new 'proyect_name'`.
+
+Ej:
+
+```Rust
+mod A {
+    pub fn a() {}
+    pub fn b() {}
+    pub mod B {
+        pub fn a() {}
+        pub fn b() {}
+    }
+}
+
+mod C {
+    fn a() {}
+    fn b() {}
+}
+
+fn test() {
+    // Para usar la función 'b' dentro el modulo 'A'
+    A::b();
+    // sin embargo nos dará problemas
+    // para solucionarlo debemos agregar la keyword 'pub' a la función b ya que por ahora es privada
+
+    // Para acceder al modulo 'B' dentro del modulo 'A'
+    A::B::a();
+}
+```
+
+Podemos separar todos los módulos en diferentes archivos por ejemplo podríamos tener:
+
+- el archivo `lib.rs` en donde tendríamos lo siguiente:
+
+```Rust
+mod A;
+mod C;
+
+fn test() {
+    A::b();
+    A::B::a();
+}
+```
+
+- el archivo `C.rs` en donde tendríamos:
+
+```Rust
+pub fn a() {}
+pub fn b() {}
+```
+
+- Una carpeta llamada `A` dentro de la cual tendríamos el archivo `B.rs` y el archivo `mod.rs`:
+
+```Rust
+// B.rs
+pub fn a() {}
+pub fn b() {}
+```
+
+```Rust
+// mod.rs
+pub mod B;
+pub fn a() {}
+pub fn b() {}
+
+// este archivo actuaria como el modulo 'A'
+```
+
+Como 'C' no tiene sub módulos solo llamamos al archivo `C.rs`, pero si un modulo tiene sub módulos debemos poner la declaración de ese modulo dentro de una carpeta con el nombre del modulo ('A' por ejemplo) y luego dentro de la carpeta un archivo llamado `mod.rs`
+
+```Rust
+pub mod a {
+    pub mod b {
+        pub mod c {
+            pub mod d {
+                pub fn e() {}
+            }
+        }
+    }
+}
+// cuando tenemos una jerarquía de módulos de este tipo podemos usar la keyword 'use' para llamar directamente a una función
+//que este dentro de la siguiente manera
+use a::b::c::d;
+
+// al hacer eso podemos llamar a la función de una manera mas simple
+
+// si tenemos un enum podemos acceder a el desde la función main asi:
+enum Ex {
+    A,
+    B,
+    C,
+}
+
+use Ex::{A, C} // tambien podemos solo usar un * para llamar a todos los tipos dentro del 'enum'
+
+fn main() {
+    d::e();
+    A
+    C
+}
+```
+
+Para llamar a una librería externa:
+
+```Rust
+extern crate name;
+```
