@@ -1643,7 +1643,7 @@ fn main() {
 La forma en la que especificamos **Lifetimes** depende de lo que la función este haciendo, si cambiamos la implementación de la función para que retorne el primer argumento en vez de uno de los otros entonces no tendríamos que especificar el **lifetime** o el segundo parámetro ('y'):
 
 ```Rust
-// Aquí no daria error
+// Aquí no daría error
 fn pr<'a>(x: &'a str, y: &str) -> &'a str {
     x
 }
@@ -1677,7 +1677,7 @@ fn main() {
 }
 ```
 
-Es importante saber que en **Rust** cada referencia tiene un **lifetime annotation** incluso si no especificamos una nosotros sigue existiendo en el compilador, eso es lo que se conoce como **lifetime inference** o **lifetime allusion**. **Allusion** no prefiere una inferencia completa, si Rust aplica deterministicamente aplica esta regla (**lifetime allusion**) pero aun asi sigue habiendo una ambigüedad en el **lifetime** actual entonces debemos declararlo explícitamente.
+Es importante saber que en **Rust** cada referencia tiene un **lifetime annotation** incluso si no especificamos una nosotros sigue existiendo en el compilador, eso es lo que se conoce como **lifetime inference** o **lifetime allusion**. **Allusion** no prefiere una inferencia completa, si Rust aplica deterministicamente esta regla (**lifetime allusion**) pero aun asi sigue habiendo una ambigüedad en el **lifetime** actual entonces debemos declararlo explícitamente.
 
 El compilador aplica **allusion** basado en unas pocas reglas, si tenemos una función con **una** referencia entonces tendrá exactamente **un** parámetro
 
@@ -1737,5 +1737,61 @@ fn main() {
     // si es que hay varios de estos
     // si no encontramos la solución a una referencia potencialmente peligros entonces deberíamos usar el 
     // 'static lifetime'
+}
+```
+
+## Macros and Metaprogramming
+
+Rust provee un sistema con varios **macros** bastante poderosos lo cual nos permite hacer **metaprogramacion**. Los **macros** actúan como funciones excepto que estas usan un bang al final `!`, por ejemplo `println!()` y `vec![]` son ambos **macros**
+
+```Rust
+fn main() {
+    println!("");
+    vec![]
+}
+```
+
+Cualquier función que veas que tiene un signo de exclamación al final es un **macro**. En vez de nosotros generar una función las **macros** están de base en el lenguaje.
+
+Para crear una **macros**:
+
+```Rust
+macro_rules! a_macro {// usamos la macro 'macro_rules!' y luego ponemos el nombre de la macro ("a_macro")
+    () => (
+        println!("This is a macro");// body de la macro
+    )
+}
+
+fn main() {
+    a_macro!();//return "This is a macro"
+}
+```
+
+Típicamente se usan las macros cuando no quieres repetirte. Muchas veces dentro de un programa encontraremos que estamos repitiendo varias veces alguna funcionalidad entonces tal vez quieras crear una macro para hacerte el trabajo un poco mas fácil, tambien puedes usar las macros para crear **domain specific languages** **(DSL)**
+
+Los argumentos de una macro deben ser precedidos por un signo de dolar `$`
+
+```Rust
+macro_rules! x_and_y {
+    (x => $e:expr) => (println!("X: {}", $e));//argumento 'e' con el 'designator' expr(expretion)
+    (y => $e:expr) => (println!("Y: {}", $e));
+}
+
+macro_rules! build_fn { // esta macro crea una función que cuando se ejecuta imprime el println!()
+    ($func_name:ident) => (
+        fn $func_name() {
+
+            println!("You called {:?}()",
+                    stringify!($func_name));
+        }
+    )
+}
+
+fn main() {
+    x_and_y!(x => 10);
+    x_and_y!(y => 20 + 30);
+
+    build_fn!(Hi_there);
+    Hi_there();// return You called "Hi_there"() 
 }
 ```
