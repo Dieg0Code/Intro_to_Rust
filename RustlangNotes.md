@@ -1787,11 +1787,88 @@ macro_rules! build_fn { // esta macro crea una función que cuando se ejecuta im
     )
 }
 
+macro_rules! print_ex {
+    ($e:expr) => ( // toma una expresión 'e' y luego imprime esa expresión
+        println!("{:?} = {:?}",
+                stringify!($e),
+                $e);
+    )
+}
+
 fn main() {
     x_and_y!(x => 10);
     x_and_y!(y => 20 + 30);
 
     build_fn!(Hi_there);
-    Hi_there();// return You called "Hi_there"() 
+    Hi_there();// return You called "Hi_there"()
+    
+    print_ex!({ // podemos pasar este bloque completo a la macro
+        let y = 20;
+        let z = 30;
+        z + y + 10 * 3 * 100
+    }); // return "{let y = 20; let z = 30; z + y + 10 * 3 * 100}" = 3050
+}
+```
+
+Las macros tambien pueden ser sobrecargadas:
+
+```Rust
+macro_rules! exame {
+    // si lo invocamos con un 'and' entre 'l' y 'r' ejecutara este bloque
+    ($l:expr; and $r:expr) => ( // este bloque es similar a un match statement
+        println!("{:?} and {:?} is {:?}",
+                stringify!($l),
+                stringify!($r),
+                $l && $r) // en esencia el bloque se reduce a esta linea
+    );
+
+    // si lo invocamos con un 'or' entre 'l' y 'r' ejecutara este bloque
+    ($l:expr; or $r:expr) => ( // este bloque tambien es similar aun match statement
+        println!("{:?} or {:?} is {:?}",
+                stringify!($l),
+                stringify!($r),
+                $l || $ r) // <-
+    );
+}
+
+fn main() {
+    exame!(1 == 1; and 2 == 1 + 1); // return: "1 == 1" and "2 == 1 + 1" is true
+    exame!(true; or false);// return: "true" or "false" is  true
+}
+```
+
+List comprehension macro:
+
+```Rust
+macro_rules! compr {
+    ($id1: ident | $id2: ident <- [$start: expr ; $end: expr], $cond: expr) => {
+        {
+            let mut vec = Vec::new();
+
+            for num in $start..$end + 1 {
+                if $cond(num) {
+                    vec.push(num);
+                }
+            }
+
+            vec
+        }
+    };
+}
+
+fn even(x: i32) -> bool {
+    x % 2 == 0
+}
+
+fn odd(x: i32) -> bool {
+    x % 2 != 0
+}
+
+fn main() {
+    let evens = compr![x | x <- [1;10], even];
+    println!("{:?}", evens); // return: [2, 4, 6, 8, 10]
+
+    let odds = compr![y | y <- [1;10], odd];
+    println!("{:?}", odds); // return: [1, 3, 5, 7, 9]
 }
 ```
