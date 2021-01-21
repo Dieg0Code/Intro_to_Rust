@@ -1872,3 +1872,59 @@ fn main() {
     println!("{:?}", odds); // return: [1, 3, 5, 7, 9]
 }
 ```
+
+```Rust
+use std::collections::HashMap;
+
+macro_rules! new_map {
+    ($($key: expr => $val: expr),*) => {// esta expresión se puede repetir desde cero hasta infinitas veces
+        {                              // eso es lo que representa el signo '$' al principio junto con el signo
+            let mut map = HashMap::new();// '*' al final
+
+            $(
+                map.insert($key, $key);// se repite la misma cantidad de veces que la expresión de arriba.
+            )*  // Podemos usar un signo '+' en vez de un '*' para indicar para indicar que la macro debe aparecer
+                // al menos una vez y se puede repetir las veces que quiera, al igual que el '*', lo que el
+                // asterisco indica es que si la expresión aparece 0 o mas veces, pero si debe aparecer al menos una
+            map // vez usamos es signo mas
+        }
+    };
+}
+
+fn main() {
+    let m = new_map! {
+        "one" => 1,
+        "two" => 2,
+        "three" => 3
+    }; // el HashMap que retorna es: {"one": 1, "two": 2, "three": 3}
+}
+```
+
+Domain specific language type macro example:
+
+```Rust
+macro_rules! calc {
+    (eval $e: expr) => {{ // aqui creamos la keyword "eval"
+        {
+            let val: usize = $e;// forzamos a todas la expresiones que pasen por aquí a ser de tipo Integers
+            println!("{} = {}", stringify!{$e}, val);
+        }
+    }};
+
+    (eval $e:expr, $(eval $es: expr), +) =>  {
+        {
+            calc! {eval $e}
+            calc! { $(eval $es),+}
+        }
+    };
+}
+
+fn main() {
+    calc! {
+        eval 4 * 5,
+        eval 4 + 10,
+        eval (10 * 3) - 20
+    };  // return: 4 * 5 = 20
+}       // 4 + 10 = 14
+        // (10 * 3) - 20 = 10     
+```
