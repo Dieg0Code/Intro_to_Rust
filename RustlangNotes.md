@@ -1877,9 +1877,9 @@ fn main() {
 use std::collections::HashMap;
 
 macro_rules! new_map {
-    ($($key: expr => $val: expr),*) => {// esta expresión se puede repetir desde cero hasta infinitas veces
-        {                              // eso es lo que representa el signo '$' al principio junto con el signo
-            let mut map = HashMap::new();// '*' al final
+    ($($key: expr => $val: expr),*) => {    // esta expresión se puede repetir desde cero hasta infinitas veces
+        {                                  // eso es lo que representa el signo '$' al principio junto con el signo
+            let mut map = HashMap::new();  // '*' al final
 
             $(
                 map.insert($key, $key);// se repite la misma cantidad de veces que la expresión de arriba.
@@ -1928,3 +1928,176 @@ fn main() {
 }       // 4 + 10 = 14
         // (10 * 3) - 20 = 10     
 ```
+
+## Error Handling
+
+Cualquier programa que escribas va a tener en algún momento algún tipo de bug o error. Rust divide sus errores en dos grupos **recuperable** e **irrecuperable**, los errores **recuperables** son errores que cuando ocurren el programa no crashea por completo, tan solo sigue corriendo y tal vez puede llegar a causar algún efecto secundario innecesario. Por otro lado un error **irrecuperable** causa que el programa falle, estos errores podrían hacer que el programa pare por completo.
+
+### errores irrecuperables
+
+```Rust
+fn main() {
+    let v = vec![1,2];
+
+    v[50];// esto causaría un panic error
+}
+```
+
+```Rust
+fn exit(x: i32) {
+    if x == 0 {
+        panic!("we got a 0");// en Rust esta la macro panic! la cual fuerza un panic error en el programa
+    }
+    println!("things are fine!");
+}
+
+fn main() {
+    exit(1);
+    exit(0);
+}
+```
+
+No todos los errores son irrecuperables. La mayoría no son lo suficientemente serios como para que el programa pare completamente. Usamos estas dos abstracciones para ayudarnos con estos tipos errores.
+
+```Rust
+enum Result<T, E>{
+    Ok(T),
+    Err(E)
+}
+
+enum Option<T>{
+    Some(T),
+    None,
+}
+```
+
+Podemos reescribir la funcion "exit" anterior con un "Option"
+
+```Rust
+fn exit(x: Option<i32>) {
+    match x {
+        Some(0) => panic!("We got a 0"),
+        Some(x) => println!("We got a {} things are fine", x),
+        None => println!("we got nothing"),
+    }
+}
+
+fn main() {
+    exit(Some(1));
+    exit(Some(10));
+    exit(None);
+    exit(Some(0));
+}
+```
+
+Las "Options" son bastante útiles cuando queremos lidiar con los errores.
+
+Results:
+
+```Rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("text.txt");
+
+    let f = match f  {
+        Ok(file) => file,
+        Err(ref error) if error.kind() == ErrorKind::NotFound => {
+            match File::create("text.txt") {
+                Ok(fc) => fc,
+                Err(e) => {
+                    panic!(
+                        "could not create file: {:?}",
+                        e
+                    )
+                },
+            }
+        },
+        Err(error) => {
+            panic!(
+                "could not open the file: {:?}",
+                error
+            )
+        },
+    };
+}
+```
+
+Este tipo pattern matching es muy util pero al mismo tiempo es muy verboso, por eso en Rust hay implementadas funciones que hacen exactamente los mismo que el bloque anterior.
+
+```Rust
+fn main() {
+    let f = File::open("text.txt").unwrap();// mostrara la data del result
+    let f = File::open("text.txt").expect("Could not open file");// si obtenemos un error automáticamente
+}                                                               // hará panic! y devolverá el mensaje que declaramos
+```
+
+```Rust
+use std::io::ErrorKind;
+
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+fn read_file() -> Result<String, io::Error> {// propagating error
+    let f = File::open("text.txt");
+
+    let mut f = match f {
+        Ok(file) => file,
+        Err(e) => return Err(e),
+    };
+
+    let mut s = String::new();
+    match f.read_to_string(&mut s) {
+        Ok(_) => Ok(s),
+        Err(e) => Err(e),  
+    }
+}
+
+fn main() {
+
+}
+```
+
+Podemos crear una version menos verbosa de la función anterior, ya que Rust provee un operador especifico para hacer mas fácil el usar el error propagating pattern
+
+```Rust
+use std::io::ErrorKind;
+
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+fn read_file() -> Result<String, io::Error> {
+    let mut f = File::open("text.txt")?;
+    let mut s = String::new();
+    f.read_to_string(&mut s)?;
+    Ok(s)
+}
+
+// Si obtenemos un ok de vuelta el programa continuara normalmente, si el valor es un error el valor dentro del 
+// error sera devuelto por la función.
+```
+
+Podemos simplificarla aun mas:
+
+```Rust
+use std::io::ErrorKind;
+
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+// Los signos '?' solo pueden ser usados dentro de funciones que retornen un 'Result'
+fn read_file() -> Result<String, io::Error> {
+    let mut s = String::new();
+    File::open("text.txt")?.read_to_string(&mut s)?;
+    Ok(s)
+}
+
+fn main() {
+
+}
+```
+
+Los panics son especialmente utiles cuando estamos usando codigo externo el cual suele estar fuera de nuestro control, ya que por lo general los errores nos son algo que esperamos que pasen.
