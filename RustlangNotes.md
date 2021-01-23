@@ -1904,7 +1904,7 @@ Domain specific language type macro example:
 
 ```Rust
 macro_rules! calc {
-    (eval $e: expr) => {{ // aqui creamos la keyword "eval"
+    (eval $e: expr) => {{ // aquí creamos la keyword "eval"
         {
             let val: usize = $e;// forzamos a todas la expresiones que pasen por aquí a ser de tipo Integers
             println!("{} = {}", stringify!{$e}, val);
@@ -1971,7 +1971,7 @@ enum Option<T>{
 }
 ```
 
-Podemos reescribir la funcion "exit" anterior con un "Option"
+Podemos reescribir la función "exit" anterior con un "Option"
 
 ```Rust
 fn exit(x: Option<i32>) {
@@ -2100,4 +2100,108 @@ fn main() {
 }
 ```
 
-Los panics son especialmente utiles cuando estamos usando codigo externo el cual suele estar fuera de nuestro control, ya que por lo general los errores nos son algo que esperamos que pasen.
+Los panics son especialmente útiles cuando estamos usando código externo el cual suele estar fuera de nuestro control, ya que por lo general los errores nos son algo que esperamos que pasen.
+
+## Concurrency, Threads, Channels, Mutex and Arc
+
+Hay dos principales tipos de **Threads** en programación, el primero es llamado **OS Thread** y el segundo es llamado **Green Thread**. El `Operating System Thread` lo entrega el mismo sistema operativo, por otro lado el `Green Thread` es una abstracción la cual corren sobre el **Operating System Thread**.
+En lenguajes como Go, Erlang o Elixir se usan estos llamados **Green Threads**, estos nos permiten crear muchos mas threads que un lenguaje normal el cual usa solo los **Operating System Threads**, por ejemplo Go podría crear 10 **Green Threads** por cada **Operating System Thread**, aparte esto escala basado en el poder de computo que se esta manejando. **Rust** usa el **Operating System Thread** directamente la razón de esto es en son de tener un menor runtime, es decir una menor cantidad de código incluyendo cada binario luego de compilar.
+
+### Threads
+
+```Rust
+use std::thread;
+
+fn main() {
+    let mut c = vec![];
+
+    for i in 0..10 {
+        c.push(thread::spawn(move || {
+            println!("thread number {}", i);
+        }));
+    } // solo se ejecutan 5 external threads, los otros 5 nunca se imprimen porque el main thread los termina antes
+      // de que se ejecuten
+
+    for j in 0..10 {
+        println!("main thread");
+    }
+}
+```
+
+El thread spawn method retorna lo que se llama un join handler, cuando llamamos al join method en nuestro join handler forzara al main thread a esperar al thread al cual esta asociado el join handler a finalizar:
+
+```Rust
+use std::thread;
+
+fn main() {
+    let mut c = vec![];
+
+    for i in 0..10 {
+        c.push(thread::spawn(move || {
+            println!("thread number {}", i);
+        }));
+    }
+
+    for j in c {// itera sobre el vector, un thread a la vez
+        j.join();// luego añade cada uno de los threads al main thread
+    }            // fuerza al main thread a esperar a que todos los otros threads se resuelvan
+
+    // return:
+    // thread number 0
+    // thread number 1
+    // thread number 2
+    // thread number 3
+    // thread number 4
+    // thread number 5
+    // thread number 6
+    // thread number 9
+    // thread number 8
+    // thread number 7
+
+    // Rust no da garantía sobre el orden de ejecución de los threads por lo que el thread 0 podría ejecutarse
+    // ultimo o el thread 9 ejecutarse primero.
+    // En todo caso en la mayoría de las veces no nos importa el orden de ejecución de los threads
+```
+
+```Rust
+use std::thread;
+
+fn main() {
+    let v = vec![1, 2, 3];
+
+    let handle = thread::spawn(move || {// move keyword permite a la closure usar la data de un thread en otro
+        println!("vector: {:?}", v);    // en esencia estamos tomando control de la data del main thread 
+    });                                 // dentro de la closure.
+                                        // 'move' keyword fuerza a la closure a referenciar la data por valor en vez
+    handle.join();                      // de por referencia, en ese sentido podemos capturar valores del entorno
+}                                       // cuando estamos iniciando nuevos threads.
+                                        // Rust de primeras trata de capturar en este caso la variable 'v'
+                                        // pero la macro println!() solo necesita una referencia
+                                        // asique la closure trata de pedir prestada 'v'
+                                        // cuando ponemos 'move' en vez de pedir prestada la variable 'v'
+                                        // tomamos 'v' y la ponemos dentro del thread y le damos el control total a 
+                                        // este.
+                                        // Usamos 'move' para forzar a la closure a tomar control del valor, cuando
+                                        // usamos 'move' garantizamos a Rust que el main thread no seguirá usando
+                                        // mas este valor. Si luego intentamos interactuar con 'v' fuera de la
+                                        // closure no  funcionara ya que 'v' fue removida por completo del scope
+                                        // de 'main' y fue puesta dentro del scope de la closure
+```
+
+### Channels
+
+```Rust
+use std::thread;
+use std::sync::mpsc;// Multiple Producer Single Consumer (mpsc)
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+
+    thread::spawn(move || { tx.send(42).unwrap(); });
+
+    println!("got {}", rx.recv().unwrap());
+}
+```
+
+Los channels son usados para pasar mensajes, los channels se componen por un transmisor (tx) y un receptor (rx). El transmisor enviá un mensaje el flujo del sistema y el receptor es por donde sale ese mensaje.
+El receptor tiene dos métodos útiles .recv() y .tryrecv(), recv() es un método bloqueante, bloqueara en este caso la ejecución del main thread y esperara el mensaje, por otro lado tryrecv() es un método no bloqueante lo usaremos en casos cuando no necesitamos un resultado inmediato, cuando queremos que el thread continue haciendo otras cosas mientras esperamos el mensaje.
