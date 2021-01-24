@@ -2203,5 +2203,74 @@ fn main() {
 }
 ```
 
-Los channels son usados para pasar mensajes, los channels se componen por un transmisor (tx) y un receptor (rx). El transmisor enviá un mensaje el flujo del sistema y el receptor es por donde sale ese mensaje.
-El receptor tiene dos métodos útiles .recv() y .tryrecv(), recv() es un método bloqueante, bloqueara en este caso la ejecución del main thread y esperara el mensaje, por otro lado tryrecv() es un método no bloqueante lo usaremos en casos cuando no necesitamos un resultado inmediato, cuando queremos que el thread continue haciendo otras cosas mientras esperamos el mensaje.
+Los channels son usados para pasar mensajes, los channels se componen por un transmisor `(tx)` y un receptor `(rx)`. El transmisor enviá un mensaje el flujo del sistema y el receptor es por donde sale ese mensaje.
+El receptor tiene dos métodos útiles `.recv()` y `.tryrecv()`, `recv()` es un método bloqueante, bloqueara en este caso la ejecución del main thread y esperara el mensaje, por otro lado `tryrecv()` es un método no bloqueante lo usaremos en casos cuando no necesitamos un resultado inmediato, cuando queremos que el thread continue haciendo otras cosas mientras esperamos el mensaje.
+
+```Rust
+use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
+
+const NUM_TIMERS: usize = 24;
+
+fn timer(d: usize, tx: mpsc::Sender<usize>) {
+    thread::spawn(move || {
+        println!("{}: setting timer...", d);
+        thread::sleep(Duration::from_secs(d as u64)); // manda el thread a dormir por 'd' segundos
+        println!("{}: sent!", d);
+        tx.send(d),unwrap();
+    });
+}
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+
+    for i in 0..NUM_TIMERS {
+        timer(i, tx.clone());// clonamos el transmisor múltiples veces
+    }
+
+    for v in rx.iter().take(NUM_TIMERS) {
+        println!("{}: recived!", v);
+    }
+}
+```
+
+Este ejemplo la idea de **Multiple Producers Single Consumer (mpsc)** tenemos 24 **producers** `(tx)` diferentes y solo tenemos un **consumer** `(rx)`, por lo que la función main esta obteniendo todos los resultados de vuelta desde nuestros múltiples diferentes **threads**.
+
+Los **channels** son bastante poderosos, son una buena manera de enviar data de un **thread** otro.
+
+### Mutex
+
+Rust tiene una segunda abstracción que se usa para comunicar memoria compartida dentro de su modelo de concurrencia, esta es llamada `Mutex`, lo cual viene de **mutual exclussion**. Básicamente un mutex solo permite que un thread tenga acceso a un pedazo de data a un cierto tiempo. Hay dos roles principales por los que esta `Mutex` en `Rust`, primero el thread que quiera tener acceso a `mutex` necesita obtener el lock del mutex, y luego una vez que se finaliza la data, debes desbloquear la data para que entonces los otros threads puedan entonces adquirir la data, podemos pensar a **mutex** como un casillero de almacenamiento donde solo tenemos una llave pero tenemos múltiples personas con acceso a este, cada persona que quiera tener acceso al casillero necesitara tener acceso a la llave, si otra persona quiere acceso entonces tendra que ir donde la persona dueña de la llave, tomar la llave de esta y luego ir al casillero y abrirlo.
+
+Mutex tambien tiene acceso a un **smart pointer**, este es similar a nuestro **Box pointer**. Mas exactamente el método lock de **mutex** retorna un **smart pointer** llamado `mutex card`, el cual implementa derefen droop, asi que automáticamente dejaremos ir el lock cuando salga del scope:
+
+```Rust
+use std::sync::{Mutex, Arc};
+use std::thread;
+
+fn main() {
+    let c = Arc::new(Mutex::new(0)); // el mutex esta embebido en un Arc, Arc is an 'Atomically Reference Counted'
+    let mut hs = vec![];             // types, necesitamos hacer esto porque arcs convierten el tipo
+                                     // en tipos primitivos, los cuales son guardados para que estén seguros
+    for _ in 0..10 {                 // entre los threads, en esencia estamos convirtiendo este mutex en un tipo
+        let c = Arc::clone(&c);      // el cual actuá como un dato primitivo el cual es guardado para ser compartido
+        let h = thread::spawn(move || { // entre múltiples threads. 
+            let mut num = c.lock().unwrap(); // el thread gana el lock control del mutex, gana el valor dentro
+                                             // del mutex, en este caso 0
+            *num += 1;
+            println!("{}", num);
+        });
+        hs.push(h);
+    }
+
+    for h in hs {
+
+        h.join().unwrap();// join() para que el main thread pare y espere a que todos los otros threads
+    }                     // se resuelvan
+
+    println!("Result: {}", *c.lock().unwrap());
+}
+```
+
+Cada thread se crea y cuando es creado entonces gana acceso al mutex, incrementa el mutex en 1, luego libera su acceso al mutex, luego el siguiente thread gana acceso al mutex lo incrementa en 1, lo libera y asi. Luego después de que todos lo threads se resolvieron por el método `.join()` nuestro main thread gana acceso al mutex y luego lo imprime.
