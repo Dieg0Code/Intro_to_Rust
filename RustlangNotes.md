@@ -2243,7 +2243,7 @@ Los **channels** son bastante poderosos, son una buena manera de enviar data de 
 
 Rust tiene una segunda abstracción que se usa para comunicar memoria compartida dentro de su modelo de concurrencia, esta es llamada `Mutex`, lo cual viene de **mutual exclussion**. Básicamente un mutex solo permite que un thread tenga acceso a un pedazo de data a un cierto tiempo. Hay dos roles principales por los que esta `Mutex` en `Rust`, primero el thread que quiera tener acceso a `mutex` necesita obtener el lock del mutex, y luego una vez que se finaliza la data, debes desbloquear la data para que entonces los otros threads puedan entonces adquirir la data, podemos pensar a **mutex** como un casillero de almacenamiento donde solo tenemos una llave pero tenemos múltiples personas con acceso a este, cada persona que quiera tener acceso al casillero necesitara tener acceso a la llave, si otra persona quiere acceso entonces tendra que ir donde la persona dueña de la llave, tomar la llave de esta y luego ir al casillero y abrirlo.
 
-Mutex tambien tiene acceso a un **smart pointer**, este es similar a nuestro **Box pointer**. Mas exactamente el método lock de **mutex** retorna un **smart pointer** llamado `mutex card`, el cual implementa derefen droop, asi que automáticamente dejaremos ir el lock cuando salga del scope:
+Mutex tambien tiene acceso a un **smart pointer**, este es similar a nuestro **Box pointer**. Mas exactamente el método lock de **mutex** retorna un **smart pointer** llamado `mutex arc`, el cual implementa derefen droop, asi que automáticamente dejaremos ir el lock cuando salga del scope:
 
 ```Rust
 use std::sync::{Mutex, Arc};
@@ -2274,3 +2274,56 @@ fn main() {
 ```
 
 Cada thread se crea y cuando es creado entonces gana acceso al mutex, incrementa el mutex en 1, luego libera su acceso al mutex, luego el siguiente thread gana acceso al mutex lo incrementa en 1, lo libera y asi. Luego después de que todos lo threads se resolvieron por el método `.join()` nuestro main thread gana acceso al mutex y luego lo imprime.
+
+mutex and channel:
+
+```Rust
+use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
+
+fn is_prime(n: usize) -> bool {// checa si un numero es primo
+    (2..n).all(|i| {n % i != 0})
+}
+
+fn producer(tx: mpsc::SyncSender<usize>) -> thread::JoinHandle<()> {
+    thread::spawn(move || for i in 100_000_000.. {
+        tx.send(i).unwrap();
+    })
+}
+
+fn worker(id: u64, shared_rx: Arc<Mutex<mpsc::Receiver<usize>>>) {
+    thread::spawn(move || loop {
+        {
+            let mut n = 0;
+            match shared.rx.lock() {
+                Ok(rx) => {
+                    match rx.try_recv() {
+                        Ok(_n) => {
+                            n = _n;
+                        },
+                        Err(_) => ()
+                    }
+                },
+                Err(_) => ()
+            }
+
+            if n != 0 {
+                if is_prime(n) {
+                    println!("worker {} found a prime: {}", id, n);
+                }
+            }
+        }
+    });
+}
+
+fn main() {
+    let (tx, rx) = mpsc::sync_channel(1024);// establece la cantidad de memoria que se usara (1024)
+    let shared_rx = Arc::new(Mutex::new(rx));
+
+    for i in 1..5 {
+        worker(i, shared_rx.clone());// spawn 5 workers threads
+    }
+
+    producer(tx).join().unwrap();
+}
+```
