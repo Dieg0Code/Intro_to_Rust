@@ -2327,3 +2327,146 @@ fn main() {
     producer(tx).join().unwrap();
 }
 ```
+
+## Tests, Attributes, Configuration and Conditional compilation
+
+Cuando creas una nueva library con **cargo** esto es lo que queda dentro de `lib.rs`:
+
+```Rust
+// atributo cfg(conditional compilation flag) compilamos condicionalmente este código basado en la
+// configuración. Esto significa que todo este bloque solo compilara cuando llamemos a 'test'
+#[cfg(test)]
+mod test { // creamos un submodulo
+    #[test] // le dice al compilador que esta función es parte del test
+    fn it_works() {
+
+    }
+}
+
+// Los atributos son metadata sobre piezas de código en Rust
+```
+
+Esto se genera automáticamente para que nosotros podamos comenzar a hacer TDD (Test Driven Development).
+
+Los proyectos de tipo library no tienen función **main**, asique la forma para poder testear la funcionalidad de esta en vez de ponerla dentro de una función main es llamando a **test**
+
+Podemos correr los test con `cargo test`. Rust construye el test y lo corre en el binario que ejecuta la función que tiene la annotation `#[test]` y luego reporta si la función pasó o no el test.
+La suite de test tiene acceso al atributo **test**, tambien tiene varias **macros** que podemos usar y tambien tiene un atributo llamado should_panic el cual podemos usar si queremos
+
+```Rust
+#[cfg(test)]
+mod test {
+    #[test]
+    fn item_works() {
+
+    }
+
+    #[test]
+    fn check_two() {
+        assert!(1 + 1 == 2);// assert! macro es proveída por la std lib, es usada cuando queremos asegurarnos de 
+    }                       // que una condición en un test evalúe si es verdadera. Le damos a la macro un argumento
+}                           // para que value un booleano, si el valor que resulta es true assert! no hace nada
+                            // y el test aprueba pero si es false hará panic! y el test falla
+    #[test]
+    fn test_three() {
+        assert!(3 == 4);// FAILED
+    }
+
+    //Para poder estar seguros que el código retorna assertions correctas podemos checar que el código maneje
+    //las condiciones de error como esperamos. Por ejemplo si queremos que un test falle podemos añadir otro atributo
+    #[test]
+    #[should_panic] // le dice al compilador que este test debería fallar
+    fn test_four() {// return: OK , ya que esperábamos que fallara
+    }
+```
+
+```Rust
+pub fn add_two(a: i32) -> i32 {
+    internal_adder(a, 2)
+}
+
+fn internal_adder(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+pub fn greeting(name: &str) -> String {
+    format!("Hello {}", name)
+}
+
+fn main() {
+
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;// trae el código de fuera del modulo al scope del modulo
+    #[test]
+    fn it_works(){
+        assert_eq!(4, internal_adder(2, 2));// compara los argumentos buscando igualdad, si falla imprime los valores
+        // tambien esta la macro assert_ne! la cual hace lo apuesto a assert_eq!, es decir busca que no sean iguales
+        // si son diferentes pasa el test
+    }
+
+    #[test]
+    #[should_panic]
+    fn another() {
+        assert!(true == false);// solo nos dice si tenemos o no un valor falso, no los valores que hicieron que falle 
+    }
+/* 
+    #[test]
+    fn greeting_contains_name() {
+        let result = greeting("Carol");
+        assert!(result.contains("Carol"));// retorna true, pero si ponemos "carol" en vez de "Carol" falla
+    } */
+    // Podemos modificar esta función para que retorne un mensaje personalizado
+    #[test]
+    fn greeting_contains_name() {
+        let result = greeting("Carol");
+        assert!(
+            result.contains("Carol"),
+            "Greeting did not contain name, value was `{}`", result
+        );
+    }
+}
+```
+
+También podemos correr un solo test en especifico con `cargo test greeting_contains_name` por ejemplo
+
+El atributo cfg (conditional compilation flag) en este caso solo compilara el modulo si es que corremos el comando `cargo test`, de no ser asi solo compilara el resto del código, asique no tenemos que preocuparnos del que el modulo de tests relentece la ejecución del programa.
+
+Podemos usar cfg tambien para otras cosas:
+
+```Rust
+#[cfg(target_os = "linux")]// si es linux corre esta función
+fn are_you_on_linux() {
+    println!("running linux!");
+}
+#[cfg(not(target_os = "linux"))]// si no es linux corre esta
+fn are_you_on_linux() {
+    println!("not running linux!");
+}
+
+fn main() {
+    are_you_on_linux();
+
+    println!("check OS again");
+    if cfg!(target_os = "linux") {
+        println!("definitely linux");
+    } else {
+        println!("not linux");
+    }
+}
+```
+
+Esta feature es muy util para CLI tools.
+
+otros atributos:
+
+```Rust
+#![allow(dead_code)]
+fn dead_func() {}
+
+fn main() {
+    dead_func();
+}
+```
