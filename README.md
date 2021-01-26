@@ -6,7 +6,7 @@ puedes encontrar la documentación oficial de Rust [aquí](https://www.rust-lang
 
 🦀🦀🦀
 
-![Hello Rust](img/Code_Qszx0p073E.png)
+![Hello Rust!!](img/Code_Qszx0p073E.png)
 
 🦀🦀🦀
 

@@ -1,5 +1,7 @@
 # Notas Rustlang
 
+🦀🦀🦀
+
 Rust es un lenguaje de programación compilado, de propósito general y multiparadigma el cual fue desarrollado por Mozilla. Ha sido diseñado para ser un lenguaje seguro, concurrente y practico. Es un lenguaje multiparadigma que soporta programación funcional pura, por procedimientos, imperativa y orientada a objetos.
 
 Rust no tiene garbage collector, en vez de eso usa algo llamado ownership.
