@@ -1,6 +1,6 @@
 # Notas Rustlang
 
-🦀🦀🦀
+##### *fuente original [aquí](https://www.youtube.com/playlist?list=PLJbE2Yu2zumDF6BX6_RdPisRVHgzV02NW)* 🦀🦀🦀
 
 Rust es un lenguaje de programación compilado, de propósito general y multiparadigma el cual fue desarrollado por Mozilla. Ha sido diseñado para ser un lenguaje seguro, concurrente y practico. Es un lenguaje multiparadigma que soporta programación funcional pura, por procedimientos, imperativa y orientada a objetos.
 
@@ -2472,5 +2472,3 @@ fn main() {
     dead_func();
 }
 ```
-
-- *fuente original [aquí](https://www.youtube.com/playlist?list=PLJbE2Yu2zumDF6BX6_RdPisRVHgzV02NW)*
