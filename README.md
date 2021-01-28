@@ -13,5 +13,5 @@ puedes encontrar la documentación oficial de Rust [aquí](https://www.rust-lang
 Rust aplicado en proyectos:
 
 - [snake game](https://github.com/Dieg0Code/SnakeGame)
-- [Port Sniffer CLI](https://github.com/Dieg0Code/Port_Sniffer_CLI)
+- [CLI Port Sniffer](https://github.com/Dieg0Code/Port_Sniffer_CLI)
 - [Blockchain.rs](https://github.com/Dieg0Code/Blockchain.rs)
