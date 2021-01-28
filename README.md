@@ -6,10 +6,12 @@ puedes encontrar la documentación oficial de Rust [aquí](https://www.rust-lang
 
 🦀🦀🦀
 
-![Hello Rust!!!](img/Code_Qszx0p073E.png)
+![Hello Rust!!!](img/Code_DxFpQk1RpQ.png)
 
 🦀🦀🦀
 
 Rust aplicado en proyectos:
 
 - [snake game](https://github.com/Dieg0Code/SnakeGame)
+- [Port Sniffer CLI](https://github.com/Dieg0Code/Port_Sniffer_CLI)
+- [Blockchain.rs](https://github.com/Dieg0Code/Blockchain.rs)
