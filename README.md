@@ -14,5 +14,6 @@ Rust aplicado en proyectos:
 
 - [snake game](https://github.com/Dieg0Code/SnakeGame)
 - [CLI Port Sniffer](https://github.com/Dieg0Code/Port_Sniffer_CLI)
-- [Blockchain.rs](https://github.com/Dieg0Code/Blockchain.rs)
+- [CLI Blockchain](https://github.com/Dieg0Code/Rust_Blockchain)
 - [HTTP Server](https://github.com/Dieg0Code/HTTPServer.rs)
+- [Blockchain.rs](https://github.com/Dieg0Code/Blockchain.rs)
