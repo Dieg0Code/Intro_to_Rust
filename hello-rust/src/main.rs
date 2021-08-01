@@ -3,7 +3,7 @@ use std::io::{stdout, BufWriter};
 
 fn main() {
     let stdout = stdout();
-    let message = String::from("https://github.com/Dieg0Code !!");// 🦀🦀🦀
+    let message = String::from("https://github.com/Dieg0Code !!"); // 🦀🦀🦀
     let width = message.chars().count();
 
     let mut writer = BufWriter::new(stdout.lock());

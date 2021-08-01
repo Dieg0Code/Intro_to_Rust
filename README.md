@@ -6,7 +6,7 @@ puedes encontrar la documentación oficial de Rust [aquí](https://www.rust-lang
 
 🦀🦀🦀
 
-![Hello Rust!!!](img/Code_DxFpQk1RpQ.png)
+![ferris](https://i.redd.it/vp0a1tf4jc911.png)
 
 🦀🦀🦀
 
