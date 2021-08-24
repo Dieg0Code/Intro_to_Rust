@@ -64,7 +64,9 @@ rustup doc --help
 
 ## ¿Que hace a Rust tan seguro?
 
-`Rust` busca frenar varias vulnerabilidades desde el momento en el que empiezas a escribir código, simplemente no compilará si hay algún error de sintaxis o algún bug relacionado con un mal manejo de la memoria, tiene un *borrow checker* el cual se encarga de validar las referencias de memoria, si no se encuentra una referencia de memoria que se esta usando, `Rust` arrojará un error. Protege la memoria por diseño, se asegura de que el programador use los recursos correctamente y no se dejen referencias de memoria sin usar(sin importar bajo que condiciones se ejecute el programa). Con esto se evitan el [**70% de los bugs de seguridad**](https://www.ordenadores-y-portatiles.com/bug/) que se pueden producir en programación.
+`Rust` busca frenar varias vulnerabilidades desde el momento en el que empiezas a escribir código, simplemente no compilará si hay algún error de sintaxis o algún bug relacionado con un mal manejo de la memoria, tiene un *borrow checker* el cual se encarga de validar las referencias de memoria, si no se encuentra una referencia de memoria que se esta usando, `Rust` arrojará un error.
+
+Protege la memoria por diseño, se asegura de que el programador use los recursos correctamente y no se dejen referencias de memoria sin usar(sin importar bajo que condiciones se ejecute el programa). Con esto se evitan el [**70% de los bugs de seguridad**](https://www.ordenadores-y-portatiles.com/bug/) que se pueden producir en programación.
 
 Rust advertirá y prevendrá:
 
@@ -91,11 +93,25 @@ Vs.
 ```rust
 pub fn main() {
     let mut a:[char; 2] = ['1', '2'];
-    let mut b:[char; 3] = ['1', '2', '3'];
-    a.copy_from_slice(&b);
+    let b:[char; 3] = ['1', '2', '3'];
+    a.copy_from_slice(&b); // Buffer overflow porque 'a' no tiene memoria suficiente para copiar 'b' en ella. println!("{}; {}", a, b);
 }
 ```
 
 ![Buffer Overflow Rust](./img/bufferOverflowRust.png)
 
 `Rust` nos devuelve un error, y detiene la ejecución del programa al llegar a la función `copy_from_slice`, esto lo detecta `Rust` al chequear el tiempo de ejecución, no en la compilación.
+
+`Rust` le enseña al programador la forma correcta de como deberíamos escribirlo si queremos evitar bugs de seguridad relacionados con el uso de la memoria.
+
+A medida que se va trabajando con el lenguaje podemos darnos cuenta de que `Rust` en cierta forma se enseña a si mismo. Ya sea con la documentación que trae por default o con el mismo compilador el cual no solo nos indica los errores de sintaxis, sino que también nos da tips sobre como solucionar dichos errores, los logs que devuelve son muy claros y nos ayudan a entender que hacemos mal.
+
+### Razones para usar Rust
+
+- `Seguridad de tipos`: El compilador nos asegura que ninguna operación será aplicada a una variable del tipo incorrecto.
+- `Seguridad de memoria`: Todas las referencias siempre apuntarán a una dirección de memoria válida.
+- `Sin condiciones de carrera`: El sistema de *ownership* nos garantiza que múltiples partes del programa no puedan modificar el mismo valor al mismo tiempo.
+- `Abstracciones a costo cero`: Rust nos permite usar conceptos de alto nivel (iteraciones, interfaces, enums, programación funcional, etc) con un costo nulo o mínimo en rendimiento.
+- `Runtime mínimo`: Rust tiene un runtime mínimo y lo más optimizado posible, similar a `C` y `C++`.
+- `Usado en Webassembly`: [WebAssembly](https://rustwasm.github.io/), abreviado wasm, es un formato de código binario portable, para la ejecución íntegra en navegador de scripts de lado del cliente. Se trata de un lenguaje de bajo nivel, diseñado inicialmente como formato destino en la compilación desde C y C++, aunque se puede usar en otros lenguajes como Rust o Go. En pocas palabras permite ejecutar lenguajes de alto rendimiento en el navegador de forma nativa.
+- [`Gran potencial para el desarrollo de videojuegos`](https://arewegameyet.rs/): Cuando buscamos opciones que potencien el rendimiento de un videojuegos, Rust es una opción mas que viable.
