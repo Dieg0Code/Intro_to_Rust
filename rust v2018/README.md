@@ -188,3 +188,11 @@ cargo build --release
 Este comando compila el proyecto en modo `release`, aplicando optimizaciones para que el binario sea más eficiente. Este comando es muy útil cuando trabajamos con el proyecto en producción, pero no es necesario para el desarrollo ya que hace que la compilación sea más lenta.
 
 Cuando usamos `--release` se crea otra carpeta dentro de `target` llamada `release` que contiene el binario compilado con las optimizaciones.
+
+## ¿Que IDE usar?
+
+En la sección [tools](https://www.rust-lang.org/tools) de la página web de Rust encontramos una lista de herramientas que nos ayudan a programar con el lenguaje. Para esto tenemos que instalar las herramientas correspondientes, en mi caso el que yo uso y recomiendo es [Vscode](https://code.visualstudio.com/), con el plugin [Rust analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer), recomiendo ese plugin por sobre otros ya que este nos provee *inlay hints*, estos son marcadores especiales que aparecen en el editor, los cuales nos muestran información adicional sobre el código que estamos escribiendo.
+
+![inlay hints](./img/inlay-hints.png)
+
+En este caso nos da información sobre el tipo de dato de las variables, nos da información adicional en las funciones, etc. Muy útil.
