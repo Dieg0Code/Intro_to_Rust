@@ -116,3 +116,75 @@ A medida que se va trabajando con el lenguaje podemos darnos cuenta de que `Rust
 - `Usado en Webassembly`: [WebAssembly](https://rustwasm.github.io/), abreviado wasm, es un formato de código binario portable, para la ejecución íntegra en navegador de scripts de lado del cliente. Se trata de un lenguaje de bajo nivel, diseñado inicialmente como formato destino en la compilación desde C y C++, aunque se puede usar en otros lenguajes como `Rust` o Go. En pocas palabras permite ejecutar lenguajes de alto rendimiento en el navegador de forma nativa.
 - [`Gran potencial para el desarrollo de videojuegos`](https://arewegameyet.rs/): Cuando buscamos opciones que potencien el rendimiento de un videojuegos, Rust es una opción mas que viable.
 - `Desarrollo web`: A pesar de ser un lenguaje relativamente nuevo ya posee [formas](https://www.arewewebyet.org/) de usarse en el desarrollo web, tanto para el backend como para el frontend (usando wasm 😮).
+
+## ¿Que es Cargo?
+
+`Cargo` es el package manager (gestor de paquetes) de Rust, como `npm`, `yarn` en JS o `pip` en Python. Este package manager nos ayuda a compilar el código, descargar dependencias, compilar dependencias, etc.
+
+Para checar la version de Cargo que tenemos instalada:
+
+```bash
+cargo --version
+```
+
+Una de las utilidades de `cargo` es que nos ayuda a armar la estructura de nuestro proyecto para que no tengamos que crearla a mano.
+
+Para crear un nuevo proyecto usando `cargo`:
+
+```bash
+cargo new nombre-del-proyecto
+```
+
+Este comando nos crea una carpeta con el nombre del proyecto, dentro un archivo `Cargo.toml` y una carpeta `src` con un archivo `main.rs` que contiene el código principal del proyecto.
+
+### El archivo `Cargo.toml`
+
+Este es el archivo que indica la configuración del proyecto. Indica las dependencias que necesita el proyecto, las versiones de las mismas, el nombre del proyecto, la versión del proyecto, etc.
+
+Ej:
+
+```toml
+[package]
+name = "nombre-del-proyecto"
+version = "0.1.0"
+authors = ["Mi nombre"]
+edition = "2018"
+
+[dependencies]
+```
+
+No tenemos que reinventar la rueda cada vez que comenzamos un nuevo proyecto, podemos usar paquetes que han echos otros desarrolladores para incluir diferentes funcionalidades en la aplicación.
+
+En Rust los paquetes de dependencias se llaman `crates` (en español seria como cajón, de esos que suelen estar en los puertos).
+
+En vez de ir compilando los archivos manualmente, podemos usar `cargo` para hacerlo automáticamente.
+
+```bash
+cargo build
+```
+
+Este comando compila todo el proyecto y deja el binario resultante en la carpeta `target`.
+
+Existe otro comando que compila y luego ejecuta el binario:
+
+```bash
+cargo run
+```
+
+Otro comando muy util es:
+
+```bash
+cargo check
+```
+
+El cual comprueba si el código es correcto para ser compilado, pero no lo compila. Es mucho más rápido que usar `cargo build` o `cargo run`.
+
+Existe una variación del comando `cargo build`:
+
+```bash	
+cargo build --release
+```
+
+Este comando compila el proyecto en modo `release`, aplicando optimizaciones para que el binario sea más eficiente. Este comando es muy útil cuando trabajamos con el proyecto en producción, pero no es necesario para el desarrollo ya que hace que la compilación sea más lenta.
+
+Cuando usamos `--release` se crea otra carpeta dentro de `target` llamada `release` que contiene el binario compilado con las optimizaciones.
