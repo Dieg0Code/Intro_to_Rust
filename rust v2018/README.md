@@ -240,3 +240,15 @@ cargo clippy
 ```
 
 Y nos dará una lista de sugerencias de código que podemos aplicar para mejorar la calidad y legibilidad de este.
+
+### Cargo Doc
+
+`cargo doc` nos permite generar una documentación de nuestro proyecto de forma automática.
+
+Podemos usarlo localmente y ver lo que genera con el siguiente comando:
+
+```bash
+cargo doc --open
+```
+
+También está de forma [online](https://docs.rs/) con la documentación de todos los *crates* públicos.
