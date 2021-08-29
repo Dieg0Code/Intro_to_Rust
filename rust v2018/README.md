@@ -231,7 +231,7 @@ cargo fmt
 
 ### Clippy
 
-[`Clippy`](https://github.com/rust-lang/rust-clippy) ayuda a los desarrolladores de todos los niveles de experiencia a escribir código más limpio, mas idiomatico, y a reforzar los estándares.
+[`Clippy`](https://github.com/rust-lang/rust-clippy) ayuda a los desarrolladores de todos los niveles de experiencia a escribir código más limpio, mas idiomático, y a reforzar los estándares.
 
 Una vez instalado. Para usarlo debemos ejecutar el siguiente comando en la carpeta del proyecto:
 
@@ -252,3 +252,90 @@ cargo doc --open
 ```
 
 También está de forma [online](https://docs.rs/) con la documentación de todos los *crates* públicos.
+
+## Variables, inmutabilidad y constantes
+
+Para declarar una variable en Rust, debemos usar la palabra `let` y el nombre de la variable.
+
+```rust
+let x = 5;
+```
+
+Para ver en la consola el valor de esta variable hacemos lo siguiente:
+
+```rust
+println!("El valor de x es: {}", x);
+```
+
+En este caso, el valor de la variable `x` es 5. Los símbolos `{}` indican que en esa posición se va a insertar el valor de una variable la cual debe pasarse luego.
+
+Podemos imprimir más de una variable con `{}`:
+
+```rust
+println!("El valor de x es: {}, y el valor de y es: {}", x, y);
+```
+
+Tendríamos que declarar las variables `x` e `y` antes de usarlas.
+
+Como te habrás dado cuenta Rust finaliza la declaración de las lineas con `;` al igual que en otros lenguajes, como `Java` por ejemplo.
+
+Un código "real" se vería mas o menos así:
+
+```rust
+fn main() {
+    let x = 5;
+    let y = 10;
+    println!("El valor de x es: {}, y el valor de y es: {}", x, y);
+}
+```
+
+La función `main` es la función principal del programa, y es la que se ejecuta primero.
+
+Rust es en realidad un lenguaje fuertemente tipado, es decir que todas las variables deben tener un tipo de dato, sin embargo, si no lo hacemos, si no declaramos el tipo Rust es lo suficientemente inteligente para inferir el tipo de dato de la variable.
+
+### Los tipos de dato `Integer` son:
+
+| Longitud | Con signo | Sin signo |
+|----------|----------|-----------|
+| 8-bit     | `i8`     | `u8`      |
+| 16-bit    | `i16`    | `u16`     |
+| 32-bit    | `i32`    | `u32`     |
+| 64-bit    | `i64`    | `u64`     |
+| 128-bit   | `i128`   | `u128`    |
+| arch     | `isize`  | `usize`   |
+
+*La "u" en `u8` por ejemplo significa unsigned, es decir, que no tiene signo, es decir, no puede ser negativo, mientras que `i8` es signed, es decir, puede ser negativo.*
+
+Ej:
+
+```rust
+let x: u8 = 5;
+let y: i8 = -5;
+```
+
+*Los tipos `isize` y `usize` dependen del sistema operativo en el que estemos ejecutando el programa. La longitud seria 64 bits en un sistema operativo de 64 bits, 32 bits en un sistema operativo de 32 bits.*
+
+También podemos declarar enteros de cualquiera de las siguientes formas:
+
+| Números literales | Ejemplo |
+|-------------------|---------|
+| Decimal     | `98_222` |
+| Hex       | `0xff`   |
+| Octal     | `0o77`   |
+| Binario   | `0b1111_0000` |
+| Byte(`u8` only)      | `b'A'`   |
+
+Si no sabemos que tipo de dato usar para los enteros Rust por defecto asignará un `i32`.
+
+### Tipo `Float`
+
+Los tipos `Float` son aquellos que contienen un punto decimal, en Rust están `f32` y `f64`, los cuales son de 32 y 64 bits respectivamente. El tipo por defecto para los floats es `f64`.
+
+Ej:
+
+```rust
+let x = 2.0; // f64
+let y: f32 = 3.0; // f32
+```
+
+El tipo `f32` es de precisión simple, mientras que `f64` es de precisión doble.
