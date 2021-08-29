@@ -104,7 +104,7 @@ pub fn main() {
 
 `Rust` le enseña al programador la forma correcta de como deberíamos escribirlo si queremos evitar bugs de seguridad relacionados con el uso de la memoria.
 
-A medida que se va trabajando con el lenguaje podemos darnos cuenta de que `Rust` en cierta forma se enseña a si mismo. Ya sea con la documentación que trae por default o con el mismo compilador el cual no solo nos indica los errores de sintaxis, sino que también nos da tips sobre como solucionar dichos errores, los logs que devuelve son muy claros y nos ayudan a entender que hacemos mal.
+A medida que se va trabajando con el lenguaje podemos darnos cuenta de que `Rust` de cierta manera se enseña a si mismo. Ya sea con la documentación que trae por default o con el mismo compilador el cual no solo nos indica los errores de sintaxis, sino que también nos da tips sobre como solucionar dichos errores, los logs que devuelve son muy claros y nos ayudan a entender que hacemos mal.
 
 ### Razones para usar Rust
 
@@ -135,11 +135,11 @@ Para crear un nuevo proyecto usando `cargo`:
 cargo new nombre-del-proyecto
 ```
 
-Este comando nos crea una carpeta con el nombre del proyecto, dentro un archivo `Cargo.toml` y una carpeta `src` con un archivo `main.rs` que contiene el código principal del proyecto.
+Este comando nos crea una carpeta con el nombre del proyecto, dentro un archivo `Cargo.toml` y una carpeta `src` con un archivo `main.rs` que contiene el código principal.
 
 ### El archivo `Cargo.toml`
 
-Este es el archivo que indica la configuración del proyecto. Indica las dependencias que necesita el proyecto, las versiones de las mismas, el nombre del proyecto, la versión del proyecto, etc.
+Este es el archivo que indica la configuración del proyecto. Indica las dependencias que necesita, las versiones de las mismas, el nombre del proyecto, la versión del proyecto, etc.
 
 Ej:
 
@@ -195,4 +195,48 @@ En la sección [tools](https://www.rust-lang.org/tools) de la página web de Rus
 
 ![inlay hints](./img/inlay-hints.png)
 
-En este caso nos da información sobre el tipo de dato de las variables, nos da información adicional en las funciones, etc. Muy útil.
+En este caso nos da información sobre el tipo de dato de las variables, nos da información adicional sobre los parámetros en las funciones, etc. Muy útil.
+
+### Para debugear
+
+Para sistemas mac/linux y windows (x86 only):
+
+- [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)
+
+Para windows:
+
+- [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
+
+Las extensiones de debuger son muy útiles, ya que mediante *breakpoints* podemos detener la ejecución del código en lineas específicas, y así ver el estado de la ejecución hasta ese punto.
+
+### Otras extensiones útiles
+
+- [TOML Language Support](https://marketplace.visualstudio.com/items?itemName=be5invis.toml) (soporte para archivos TOML)
+
+- [crates](https://marketplace.visualstudio.com/items?itemName=serayuzgur.crates) (soporte para dependencias de Rust)
+
+## Antes de empezar
+
+Es importante que también conozcamos un par de herramientas más que nos provee `Rust` para las buenas prácticas de programación.
+
+### Rustfmt
+
+[`Rustfmt`](https://github.com/rust-lang/rustfmt) formatea automáticamente el código, haciéndolo más fácil de leer, escribir y mantener. Y lo más importante: nunca más tendremos que debatir si es mejor usar espacios o tabulaciones.
+
+Una vez instalado. Para usarlo debemos ejecutar el siguiente comando en la carpeta del proyecto:
+
+```bash
+cargo fmt
+```
+
+### Clippy
+
+[`Clippy`](https://github.com/rust-lang/rust-clippy) ayuda a los desarrolladores de todos los niveles de experiencia a escribir código más limpio, mas idiomatico, y a reforzar los estándares.
+
+Una vez instalado. Para usarlo debemos ejecutar el siguiente comando en la carpeta del proyecto:
+
+```bash
+cargo clippy
+```
+
+Y nos dará una lista de sugerencias de código que podemos aplicar para mejorar la calidad y legibilidad de este.
