@@ -1,5 +1,7 @@
 # Rust
 
+*Este documento fue escrito con la ayuda de [Github Copilot](https://copilot.github.com/).*
+
 `Rust` es un lenguaje de programación compilado multiparadigma, de alto nivel, de propósito general diseñado para eficiencia y seguridad, especialmente en cuanto a concurrencia. `Rust` es sintácticamente similar a `C++` pero puede garantizar seguridad en la memoria mediante el uso de un *borrow checker* para validar las referencias. `Rust` logra seguridad en la memoria sin un *garbage colector*.
 
 Este lenguaje es de [código abierto](https://github.com/rust-lang) y fue creado inicialmente por **Graydon Hoare** en **Mozilla**.
@@ -181,7 +183,7 @@ El cual comprueba si el código es correcto para ser compilado, pero no lo compi
 
 Existe una variación del comando `cargo build`:
 
-```bash	
+```bash
 cargo build --release
 ```
 
@@ -291,9 +293,11 @@ fn main() {
 
 La función `main` es la función principal del programa, y es la que se ejecuta primero.
 
-Rust es en realidad un lenguaje fuertemente tipado, es decir que todas las variables deben tener un tipo de dato, sin embargo, si no lo hacemos, si no declaramos el tipo Rust es lo suficientemente inteligente para inferir el tipo de dato de la variable.
+Rust es en realidad un lenguaje fuertemente tipado, es decir que todas las variables deben tener un tipo de dato, sin embargo, si no lo hacemos, si no declaramos el tipo, Rust es lo suficientemente inteligente para inferir el tipo de dato de la variable.
 
-### Los tipos de dato `Integer` son:
+*Aquí es donde son útiles los inlay hints.*
+
+### Tipos de dato `Integer`
 
 | Longitud | Con signo | Sin signo |
 |----------|----------|-----------|
@@ -323,7 +327,7 @@ También podemos declarar enteros de cualquiera de las siguientes formas:
 | Hex       | `0xff`   |
 | Octal     | `0o77`   |
 | Binario   | `0b1111_0000` |
-| Byte(`u8` only)      | `b'A'`   |
+| Byte (`u8` only)      | `b'A'`   |
 
 Si no sabemos que tipo de dato usar para los enteros Rust por defecto asignará un `i32`.
 
