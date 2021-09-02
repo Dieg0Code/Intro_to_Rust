@@ -1,7 +1,5 @@
 # Rust
 
-*Este documento fue escrito con la ayuda de [Github Copilot](https://copilot.github.com/).*
-
 `Rust` es un lenguaje de programación compilado multiparadigma, de alto nivel, de propósito general diseñado para eficiencia y seguridad, especialmente en cuanto a concurrencia. `Rust` es sintácticamente similar a `C++` pero puede garantizar seguridad en la memoria mediante el uso de un *borrow checker* para validar las referencias. `Rust` logra seguridad en la memoria sin un *garbage colector*.
 
 Este lenguaje es de [código abierto](https://github.com/rust-lang) y fue creado inicialmente por **Graydon Hoare** en **Mozilla**.
