@@ -297,6 +297,83 @@ Rust es en realidad un lenguaje fuertemente tipado, es decir que todas las varia
 
 *Aquí es donde son útiles los inlay hints.*
 
+```rust
+fn main() {
+    let x: u8 = 5;
+    // Si tratamos de usar otro tipo de dato en la variable `x` nos dará un error.
+    println!("El valor de x es: {}", x);
+
+    // También podemos definir una variable y después asignarle un valor.
+    let y: u8;
+    y = 10;
+    println!("El valor de y es: {}", y);
+}
+```
+
+### Inmutabilidad
+
+Por defecto en Rust las variables son inmutables, esta es una de las características del lenguaje que nos ayudan a programar de una manera más segura, en el sentido de minimizar los bugs y errores.
+
+Ejemplo:
+
+```rust
+// Si declaro una variables con let, esta variable no puede ser modificada.
+let x = 5;
+x = 6; // Error can't assign twice to inmutable variable
+```
+
+Si queremos que las variables sean mutables, debemos usar la palabra `mut` antes de la variable.
+
+```rust
+fn main() {
+    let mut x = 5;
+    println!("El valor de x es: {}", x);
+    x = 6; // en este caso no hay error
+    println!("El valor de x es: {}", x);
+}
+```
+
+En Rust también tenemos algo llamado `shadowing` que es cuando creamos otra variable con el mismo nombre que una variable ya existente.
+
+```rust
+fn main() {
+    let x = 5;
+    println!("El valor de x es: {}", x);
+    let x = 6; // en este caso no hay error
+    println!("El valor de x es: {}", x);
+}
+```
+
+Al ser las variables inmutables, sabemos que su valor no va cambiar a menos que la veamos declarada nuevamente, en eso consiste el concepto de `shadowing`.
+
+Otro uso del `shadowing`:
+
+```rust
+fn main() {
+    let x = 10;
+    println!("El valor de x es: {}", x); // 10
+    let x = x + 5; 
+    println!("El valor de x es: {}", x); // 15
+
+    // otro uso interesante del shadowing es cambiar el tipo de dato de una variable
+    let espacios = "   ";
+    println!("El usuario ingresó: {}", espacios); // "   "
+    let espacios = espacios.len();
+    println!("El número de espacios es: {}", espacios); // 3
+```
+
+### Constantes
+
+Las constantes se definen con la palabra reservada `const` y son declaradas en mayúsculas separadas por un guión bajo a diferencia de las variables `let`, debemos proveer obligadamente el tipo de dato, tampoco se le puede hacer `shadowing` a las constantes. Otra característica es que pueden ser declaradas de forma global o local.
+
+```rust
+// las constantes no pueden ser modificadas
+const MAX_POINTS: u32 = 100_000; // se puede usar _ para separar los números y hacerlo más legible
+fn main() {
+    println!("El valor máximo de puntos es: {}", MAX_POINTS); // 100_000
+}
+```
+
 ### Tipos de dato `Integer`
 
 | Longitud | Con signo | Sin signo |
