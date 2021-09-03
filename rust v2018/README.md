@@ -114,7 +114,7 @@ A medida que se va trabajando con el lenguaje podemos darnos cuenta de que `Rust
 - `Abstracciones a costo cero`: Rust nos permite usar conceptos de alto nivel (iteraciones, interfaces, enums, programación funcional, etc) con un costo nulo o mínimo en rendimiento.
 - `Runtime mínimo`: Rust tiene un runtime mínimo y lo más optimizado posible, similar a `C` y `C++`.
 - `Usado en Webassembly`: [WebAssembly](https://rustwasm.github.io/), abreviado wasm, es un formato de código binario portable, para la ejecución íntegra en navegador de scripts de lado del cliente. Se trata de un lenguaje de bajo nivel, diseñado inicialmente como formato destino en la compilación desde C y C++, aunque se puede usar en otros lenguajes como `Rust` o Go. En pocas palabras permite ejecutar lenguajes de alto rendimiento en el navegador de forma nativa.
-- [`Gran potencial para el desarrollo de videojuegos`](https://arewegameyet.rs/): Cuando buscamos opciones que potencien el rendimiento de un videojuegos, Rust es una opción mas que viable.
+- [`Gran potencial para el desarrollo de videojuegos`](https://arewegameyet.rs/): Cuando buscamos opciones que potencien el rendimiento de un videojuego, Rust es una opción mas que viable.
 - `Desarrollo web`: A pesar de ser un lenguaje relativamente nuevo ya posee [formas](https://www.arewewebyet.org/) de usarse en el desarrollo web, tanto para el backend como para el frontend (usando wasm 😮).
 
 ## ¿Que es Cargo?
@@ -372,6 +372,11 @@ fn main() {
 }
 ```
 
+## Tipos de datos
+
+Rust es un lenguaje con tipado estático, es decir que el chequeo de los tipos de dato se hace al compilar el código, no al ejecutarlo. A diferencia de otros lenguajes como Python o Javascript, los cuales son de tipado dinámico y se chequean al ejecutar el código.
+
+
 ### Tipos de dato `Integer`
 
 | Longitud | Con signo | Sin signo |
@@ -408,7 +413,9 @@ Si no sabemos que tipo de dato usar para los enteros Rust por defecto asignará 
 
 ### Tipo `Float`
 
-Los tipos `Float` son aquellos que contienen un punto decimal, en Rust están `f32` y `f64`, los cuales son de 32 y 64 bits respectivamente. El tipo por defecto para los floats es `f64`.
+Los tipos `Float` son aquellos que contienen un punto decimal, en Rust están `f32` y `f64`, los cuales son de 32 y 64 bits respectivamente.
+
+El tipo por defecto para los floats es `f64`.
 
 Ej:
 
@@ -417,4 +424,100 @@ let x = 2.0; // f64
 let y: f32 = 3.0; // f32
 ```
 
-El tipo `f32` es de precisión simple, mientras que `f64` es de precisión doble.
+### Tipo `Boolean`
+
+Solo dos valores posibles: `true` y `false`.
+
+```rust
+let x = true;
+let y = false;
+let z: bool = false;
+```
+
+### Tipo `Char`
+
+Reservado para caracteres unicode.
+
+```rust
+// se declaran con comillas simples
+let caracter = 'a';
+let emoji = '😀';
+// tambien caracteres chinos, koreanos, japoneses, etc.
+let chino = '山';
+let korean = '한';
+let japones = '日';
+```
+
+Todos los tipos de datos anteriores son llamados "tipos escalares".
+
+### Tipos compuestos
+
+### Tuplas
+
+Las tuplas son una forma de agrupar valores de diferentes tipos en una sola variable.
+
+```rust
+let tupla = (1, "Hola", true); // tupla de 3 elementos
+// también puedo decir explícitamente el tipo de dato de cada elemento
+let tupla1: (char, u32, bool) = ('a', 5, true);
+```
+
+También podemos usar una tupla de la siguiente forma:
+
+```rust
+let tupla: (char, u32, bool) = ('a', 5, true);
+let (primero, segundo, tercero) = tupla;
+// de esta forma asignamos cada uno de los elementos de la tupla a una variable respectivamente.
+```
+
+También podemos acceder a los valores de la tupla usando el índice:
+
+```rust
+// como de costumbre, los índices empiezan en 0
+let tupla = (1, "Hola", true);
+let primero = tupla.0; // 1
+let segundo = tupla.1; // "Hola"
+let tercero = tupla.2; // true
+```
+
+Las tuplas tienen un tamaño fijo, es decir, no pueden cambiarse de tamaño después de la declaración.
+
+### Arreglos / array
+
+Los arrays también son de tamaño fijo, si queremos una lista que se expanda dinámicamente debemos usar un vector.
+
+```rust
+// array
+let arreglo = [1, 2, 3, 4, 5]; // recuerda que los índices empiezan en 0
+println!("El valor de la posición 2 es: {}", arreglo[2]); // 3
+```
+
+En un `array` todos los elementos tienen el mismo tipo de dato a diferencia de las tuplas.
+
+Podemos definir con mas detalle el tipo de dato de cada elemento de un array y su tamaño:
+
+```rust
+// array de 4 elementos de tipo `i32`
+let arreglo: [i32; 4] = [1, 2, 3, 4];
+```
+
+### Tipo `string`
+
+En Rust existen dos tipos de strings:
+
+```rust
+// string slice
+let nombre: &'static str = "Juan"; // &'static str es un tipo de dato que indica que el string no va a cambiar de tamaño y que es estático.
+
+// String
+let nombre1: String = "Juan".to_string(); // String es un tipo de dato que permite cambiar de tamaño.
+```
+
+El tipo `String` es en el fondo un vector de valores `u8`, este tipo permite que la longitud del string sea variable y se almacena en el heap.
+
+Podemos inicializar una variable de tipo `String` de la siguiente forma:
+
+```rust
+let mut apellido: String = String::new();
+apellido = "Pérez".to_string();
+```
