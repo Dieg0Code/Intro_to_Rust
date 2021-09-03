@@ -581,3 +581,119 @@ fn saludar_con_nombre(nombre: &str) {
 ```
 
 El operador `&` nos permite hacer referencia a la ubicación en memoria de un valor.
+
+## Structs
+
+Los structs son tipos de datos compuestos, es decir, que contienen más datos, esto se define con la palabra reservada `struct`.
+
+Quizás te recuerden a las clases de Java.
+
+```rust
+struct Persona {
+    nombre: String,
+    email: String,
+    edad: i32,
+    sexo: char,
+    esta_vacunado: bool,
+}
+
+fn main() {
+    let persona = Persona { // esto es una instancia de la struct, muy parecido a un objeto en Java
+        nombre: "Juan".to_string(),
+        email: String::from("email@email.com"),
+        edad: 20,
+        sexo: 'M',
+        esta_vacunado: true,
+    };
+    println!("{}", persona.nombre); // Juan
+    println!("{}", persona.email); // email@email.com
+    println!("{}", persona.edad); // 20
+    println!("{}", persona.sexo); // M
+
+    // persona.esta_vacunado = false; // no se puede modificar esta propiedad porque la instancia no es mutable
+
+    let mut persona_nueva = {
+        nombre: "Pedro".to_string(),
+        email: String::from("abc@email.com"),
+        edad: 30,
+        sexo: 'M',
+        esta_vacunado: false,
+    };
+
+    persona_nueva.nombre = "Pepe".to_string(); // la instancia persona_nueva es mutable, por lo que podemos modificar sus propiedades.
+}
+```
+
+Otra propiedad importante de los structs es lo que se conoce como shorthand init, esto es cuando una propiedad de una struct tiene el mismo nombre que el parámetro de una función, en ese caso Rust asigna automáticamente el valor del parámetro a la propiedad del struct.
+
+```rust
+struct Persona {
+    nombre: String,
+    email: String,
+    edad: i32,
+    sexo: char,
+    esta_vacunado: bool,
+}
+fn main() {
+    let user1 = nueva_persona(String::from("Andres"), "abc@email.com");
+
+    // otra propiedad interesante:
+    let user2 = Persona {
+        nombre: "Juan".to_string(),
+        email: "otroemail@email.com".to_string(),
+        ..user1 // el operador .. hace que se copien todas las demás propiedades de user1 a user2
+    };
+}
+
+fn nueva_persona(nombre: String, email: String) -> Persona {
+    Persona {
+        nombre, // shorthand init en vez de poner nombre: nombre
+        email,
+        edad: 20,
+        sexo: 'M',
+        esta_vacunado: true,
+    }
+}
+```
+
+También existen las `tuple structs`:
+
+```rust
+struct Point(i32, i32, i32);
+
+let pointA = Point(1, 2, 3);
+```
+
+Son útiles para el chequeo de tipos y evitar errores al instanciar un struct.
+
+También podemos implementar métodos en los structs:
+
+```rust
+struct Persona {
+    nombre: String,
+    email: String,
+    nacimiento: i32,
+    sexo: char,
+    esta_vacunado: bool,
+}
+impl Persona {
+    fn edad(&self) -> i32 { // self es una referencia a la instancia del struct
+    // las implementaciones siempre reciben un self
+        let ahora = 2021;
+        ahora - self.nacimiento
+    }
+}
+
+fn main() {
+    let persona = Persona {
+        nombre: "Juan".to_string(),
+        email: String::from("abc@email.com"),
+        nacimiento: 2000,
+        sexo: 'M',
+        esta_vacunado: false,
+    };
+
+    let edad = persona.edad();
+    println!("{}", edad); // 21
+}
+```
