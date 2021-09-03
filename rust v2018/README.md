@@ -521,3 +521,63 @@ Podemos inicializar una variable de tipo `String` de la siguiente forma:
 let mut apellido: String = String::new();
 apellido = "Pérez".to_string();
 ```
+
+## Funciones
+
+Las funciones son bloques de código que se ejecutan cuando se llaman. En Rust se declaran con la palabra reservada `fn`.
+
+```rust
+// se escriben en formato snake_case
+fn suma_dos_numeros(a: i32, b: i32) -> i32 {
+    a + b // return es opcional
+}
+
+fn mostrar_bienvenida() {
+    println!("Bienvenido a Rust!");
+}
+
+fn main() {
+    let a = 1;
+    let b = 2;
+    let resultado = suma_dos_numeros(a, b); // llamamos a la función, le pasamos los parámetros y asignamos el resultado a una variable
+    mostrar_bienvenida(); // llamada a la función
+    println!("El resultado de la suma es: {}", resultado);
+}
+```
+
+Las funciones pueden recibir parámetros entre los paréntesis y devolver valores. El valor de retorno se define con `->` y se puede omitir si la función no devuelve ningún valor.
+
+Para indicar que es lo que devuelve una función, se usa la palabra reservada `return`, aunque esto es opcional en Rust, este siempre devolverá la última expresión de la función, esto no funciona si ponemos un `;` en la expresión que se devuelve.
+
+```rust
+fn calcular_area(base: f32, altura: f32) -> f32 {
+    base * altura // no se pone `;`
+}
+```
+
+También podemos hacer otras cosas interesantes con las funciones:
+
+```rust
+fn main() {
+    let numero = {
+        10
+    };
+    println!("El número es: {}", numero);
+    // saludar_con_nombre("Juan".to_string());
+    saludar_con_nombre("Juan");
+}
+
+// pasar una string como parámetro
+/*
+fn saludar_con_nombre(nombre: String) {
+    println!("Hola {}", nombre);
+}
+*/
+// podemos usar el tipo de dato `&str` para pasar el parámetro como una referencia
+// así nos evitamos hacer .to_string() luego de pasar el parámetro
+fn saludar_con_nombre(nombre: &str) {
+    println!("Hola {}", nombre);
+}
+```
+
+El operador `&` nos permite hacer referencia a la ubicación en memoria de un valor.
