@@ -36,7 +36,7 @@ Otra característica muy interesante de `Rust` es que trae su documentación int
 rustup doc
 ```
 
-Lo que hace este comando es abrir una nueva ventana con la documentación de Rust, esta trae varios libros los cuales podemos consultar.
+Lo que hace este comando es abrir una nueva pestaña en tu navegador web predeterminado con la documentación de Rust, esta trae varios libros los cuales podemos consultar.
 
 La documentación trae `"The Book"` el cual es una guía completa del lenguaje y en mi opinión es la mejor forma de comenzar a aprenderlo.
 
@@ -624,7 +624,7 @@ fn main() {
 }
 ```
 
-Otra propiedad importante de los structs es lo que se conoce como shorthand init, esto es cuando una propiedad de una struct tiene el mismo nombre que el parámetro de una función, en ese caso Rust asigna automáticamente el valor del parámetro a la propiedad del struct.
+Otra propiedad importante de los structs es lo que se conoce como `shorthand init`, esto es cuando una propiedad de una struct tiene el mismo nombre que el parámetro de una función, en ese caso Rust asigna automáticamente el valor del parámetro a la propiedad del struct.
 
 ```rust
 struct Persona {
@@ -666,7 +666,7 @@ let pointA = Point(1, 2, 3);
 
 Son útiles para el chequeo de tipos y evitar errores al instanciar un struct.
 
-También podemos implementar métodos en los structs:
+También podemos implementar métodos en los `structs` con la palabra reservada `impl`.
 
 ```rust
 struct Persona {
@@ -676,7 +676,7 @@ struct Persona {
     sexo: char,
     esta_vacunado: bool,
 }
-impl Persona {
+impl Persona { // impl es el equivalente a un método de una clase en Java
     fn edad(&self) -> i32 { // self es una referencia a la instancia del struct
     // las implementaciones siempre reciben un self
         let ahora = 2021;
