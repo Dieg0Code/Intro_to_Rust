@@ -362,7 +362,7 @@ fn main() {
 
 ### Constantes
 
-Las constantes se definen con la palabra reservada `const` y son declaradas en mayúsculas separadas por un guión bajo a diferencia de las variables `let`, debemos proveer obligadamente el tipo de dato, tampoco se le puede hacer `shadowing` a las constantes. Otra característica es que pueden ser declaradas de forma global o local.
+Las constantes se definen con la palabra reservada `const` y son declaradas en mayúsculas separadas por un guión bajo. A diferencia de las variables `let`, debemos proveer obligadamente el tipo de dato, tampoco se le puede hacer `shadowing` a las constantes. Otra característica es que pueden ser declaradas de forma global o local.
 
 ```rust
 // las constantes no pueden ser modificadas
@@ -510,10 +510,10 @@ En Rust existen dos tipos de strings:
 let nombre: &'static str = "Juan"; // &'static str es un tipo de dato que indica que el string no va a cambiar de tamaño y que es estático.
 
 // String
-let nombre1: String = "Juan".to_string(); // String es un tipo de dato que permite cambiar de tamaño.
+let nombre1: String = "Juan".to_string(); // String es un tipo de dato que permite cambiar de tamaño la cadena a diferencia de &'static str que mantiene el mismo tamaño una vez declarada.
 ```
 
-El tipo `String` es en el fondo un vector de valores `u8`, este tipo permite que la longitud del string sea variable y se almacena en el heap.
+El tipo `String` es en el fondo un vector de valores `u8`, este tipo permite que la longitud del string sea variable y se almacena en el [heap](https://codingornot.com/diferencias-entre-heap-y-stack) .
 
 Podemos inicializar una variable de tipo `String` de la siguiente forma:
 
@@ -524,7 +524,7 @@ apellido = "Pérez".to_string();
 
 ## Funciones
 
-Las funciones son bloques de código que se ejecutan cuando se llaman. En Rust se declaran con la palabra reservada `fn`.
+Las funciones son bloques de código que se ejecutan cuando son nombradas. En Rust se declaran con la palabra reservada `fn`.
 
 ```rust
 // se escriben en formato snake_case
@@ -559,7 +559,7 @@ También podemos hacer otras cosas interesantes con las funciones:
 
 ```rust
 fn main() {
-    let numero = {
+    let numero = { // guiño a la programación funcional
         10
     };
     println!("El número es: {}", numero);
@@ -584,21 +584,23 @@ El operador `&` nos permite hacer referencia a la ubicación en memoria de un va
 
 ## Structs
 
-Los structs son tipos de datos compuestos, es decir, que contienen más datos, esto se define con la palabra reservada `struct`.
+Los structs son tipos de datos compuestos, es decir, que contienen más datos dentro de ellos, esto se define con la palabra reservada `struct`.
 
-Quizás te recuerden a las clases de Java.
+Quizás te recuerden a las `clases` en Java.
 
 ```rust
+// guiño a la programación orientada a objetos
 struct Persona {
     nombre: String,
     email: String,
-    edad: i32,
+    edad: u32,
     sexo: char,
     esta_vacunado: bool,
 }
 
 fn main() {
-    let persona = Persona { // esto es una instancia de la struct, muy parecido a un objeto en Java
+    // esto es una instancia de la struct, muy parecido a un objeto en Java
+    let persona = Persona {
         nombre: "Juan".to_string(),
         email: String::from("email@email.com"),
         edad: 20,
@@ -612,6 +614,7 @@ fn main() {
 
     // persona.esta_vacunado = false; // no se puede modificar esta propiedad porque la instancia no es mutable
 
+    // podemos crear una instancia mutable con `mut`
     let mut persona_nueva = {
         nombre: "Pedro".to_string(),
         email: String::from("abc@email.com"),
@@ -624,13 +627,13 @@ fn main() {
 }
 ```
 
-Otra propiedad importante de los structs es lo que se conoce como `shorthand init`, esto es cuando una propiedad de una struct tiene el mismo nombre que el parámetro de una función, en ese caso Rust asigna automáticamente el valor del parámetro a la propiedad del struct.
+Otra propiedad importante de los structs es lo que se conoce como `shorthand init`, esto es cuando una `propiedad` de una `struct` tiene el mismo nombre que el `parámetro` de una `función`, en ese caso Rust asigna automáticamente el valor del parámetro a la propiedad del struct.
 
 ```rust
 struct Persona {
     nombre: String,
     email: String,
-    edad: i32,
+    edad: u32,
     sexo: char,
     esta_vacunado: bool,
 }
@@ -642,6 +645,7 @@ fn main() {
         nombre: "Juan".to_string(),
         email: "otroemail@email.com".to_string(),
         ..user1 // el operador .. hace que se copien todas las demás propiedades de user1 a user2
+        // por lo que se copiarían todos los valores que no son `nombre` e `email`
     };
 }
 
@@ -667,6 +671,8 @@ let pointA = Point(1, 2, 3);
 Son útiles para el chequeo de tipos y evitar errores al instanciar un struct.
 
 También podemos implementar métodos en los `structs` con la palabra reservada `impl`.
+
+Lo que hacen estos métodos que implementamos en los `structs` es añadir funcionalidades asociadas a estos, de forma que luego podemos escribir algo similar a *struct.method()* para invocar la funcionalidad.
 
 ```rust
 struct Persona {
