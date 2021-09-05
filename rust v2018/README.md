@@ -545,7 +545,7 @@ fn main() {
 }
 ```
 
-Las funciones pueden recibir parámetros entre los paréntesis y devolver valores. El valor de retorno se define con `->` y se puede omitir si la función no devuelve ningún valor.
+Las funciones pueden recibir `parámetros` entre los paréntesis y devolver valores. El valor de retorno se define con `->` y se puede omitir si la función no devuelve ningún valor.
 
 Para indicar que es lo que devuelve una función, se usa la palabra reservada `return`, aunque esto es opcional en Rust, este siempre devolverá la última expresión de la función, esto no funciona si ponemos un `;` en la expresión que se devuelve.
 
@@ -701,5 +701,62 @@ fn main() {
 
     let edad = persona.edad();
     println!("{}", edad); // 21
+}
+```
+
+## Enums
+
+Los enums son otra herramienta que nos proporciona Rust, se usan para representar un conjunto de valores posibles para una variable y esa variable puede tomar solo uno de esos valores.
+
+```rust
+struct User {
+    name: String,
+    email: String,
+    is_vaccinated: bool,
+    user_role: UserRole,
+    website: Website,
+}
+
+//Enums = enumeration
+enum UserRole {
+    BASIC,
+    ADMIN,
+}
+
+// podemos definir un tipo de dato directamente a las variaciones de un enum
+enum Website {
+    URL(String),
+    INSTAGRAM(String),
+    LINKEDIN(String),
+    FACEBOOK(String),
+}
+
+fn main() {
+    let mut user = User {
+        name: "Juan".to_string(),
+        email: String::from("email@email.com"),
+        is_vaccinated: true,
+        website: Website::URL(String::from("https://www.google.com")), // asignamos un valor a la variación URL
+        user_role: UserRole::BASIC,
+    };
+
+    let access = hasAccess(user.user_role); // solo dos valores posibles para el enum UserRole
+}
+
+// podemos definir una función que reciba un enum y devuelva un bool
+fn hasAccess(user_role: UserRole) -> bool {
+    match user_role { // match sirve para evaluar las variaciones de un enum
+        UserRole::ADMIN => true, // dependiendo de la variación, devolvemos un valor
+        UserRole::BASIC => false,
+    }
+}
+
+fn goToWebsite(website: Website) {
+    match website {
+        Website::URL(url) => println!("{}", url), // podemos acceder a los valores de la variación URL
+        Website::INSTAGRAM(url) => println!("{}", url),
+        Website::LINKEDIN(url) => println!("{}", url),
+        Website::FACEBOOK(url) => println!("{}", url),
+    }
 }
 ```
