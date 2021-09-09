@@ -820,3 +820,57 @@ impl User {
     }
 }
 ```
+
+## Generics, el tipo T
+
+El tipo generico T, es un tipo de dato que puede ser cualquier tipo, se usa para generalizar implementaciones.
+
+Podemos usar los generics en nuestro código para hacerlo mas flexible.
+
+```rust
+fn main() {
+    //let point = Point { x: 5, y: 10 };
+    let point = Point { x: 0.5, y: 0.7 };
+    let other_point = Point { x: 10, y: 12 };
+    let other_point2 = PointA { x: 5, y: 3.14 };
+    let point_A = PointA { x: 5, y: "Hola" };
+}
+
+// esto está bien, pero nos estamos limitando a un tipo de dato i32 en este caso
+// si quisieramos ser mas especificos con las coordenadas no podríamos hacerlo
+/*
+struct Point {
+    x: i32,
+    y: i32,
+}
+*/
+
+struct Point<T> { // con esto hacemos que el struct Point pueda tener cualquier tipo de dato
+    x: T, // pero en este caso ambos deberían ser del mismo tipo
+    y: T, // porque indicamos que ambos son del mismo tipo T
+}
+
+// para que no todos los valores del struct sean del mismo tipo generico
+struct PointA<T, U> {
+    x: T,
+    y: U,
+}
+```
+
+Esto funciona tambien en las funciones.
+
+```rust
+fn main() {
+    let point = Point { x: 0.5, y: 0.7 };
+}
+
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+// debemos indicar en la declaración de la funcion que se usa el generico <T>
+fn calculate_area<T>(pointa: Point<T>, pointb: Point<T>) {
+    // ...
+}
+```
