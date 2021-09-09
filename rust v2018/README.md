@@ -760,3 +760,63 @@ fn goToWebsite(website: Website) {
     }
 }
 ```
+
+## Option
+
+Existe en la libreria estandar de Rust un tipo de dato llamado `Option`, que es una variante de un enum, que nos permite representar dos posibles valores:
+
+```rust
+// Option<T> = variante de un enum
+enum Option<T> { // T = tipo de dato generico
+    Some(T), // ese mismo tipo T va a estar en Some
+    None,
+}
+```
+
+Esto es muy util para representar valores que pueden ser nulos.
+
+Un `NullPointerException` es una excepción que se lanza cuando intentamos acceder a un valor que no existe. Varios lenguajes de programación permiten que variables que no se han inicializado, es decir, que son nulas, pasen la compilación, por lo que solo nos enteramos de esto en tiempo de ejecución, es decir, cuando se está ejecutando el programa. Esto provoca crashs y errores.
+
+Rust nos ofrece una solución para esto, el enum `Option`.
+
+```rust
+fn main() {
+    let nombre : Option<String> = Some("Juan".to_string()); // nombre pude que no tenga nada o puede que tenga un String
+    // en este caso es una String
+    // pero podria ser None
+    // let nombre : Option<String> = None;
+
+    // podemos usar el match para evaluar las opciones
+    match nombre {
+        Some(nombre) => println!("{}", nombre), // si nombre tiene algo, imprimimos el valor
+        None => println!("No hay nombre"), // si nombre no tiene nada, imprimimos esto
+    }
+}
+```
+
+Otra forma de manejar un `Option`.
+
+```rust
+fn main() {
+    let new_user = User {
+        name: "Juan".to_string(),
+        age: Some(21),
+    }
+
+}
+
+// algunos usuarios podrían no poner una edad
+struct User {
+    name: String,
+    age: Option<i32>,
+}
+
+impl User {
+    fn get_age(&self) -> i32 {
+        self.age.unwrap_or_default() // si no tiene edad, devolvemos un valor por defecto
+        // dependiendo del tipo de dato el valor por defecto puede ser 0, "", etc.
+        // para los numeros enteros, es 0
+        // unwrap() lo que hace es sacar el valor de la Option, si fuese None, unwrap() por si solo devolveria un panic error
+    }
+}
+```
