@@ -2,7 +2,7 @@
 
 `Rust` es un lenguaje de programación compilado multiparadigma, de alto nivel, de propósito general diseñado para eficiencia y seguridad, especialmente en cuanto a concurrencia. `Rust` es sintácticamente similar a `C++` pero puede garantizar seguridad en la memoria mediante el uso de un *borrow checker* para validar las referencias. `Rust` logra seguridad en la memoria sin un *garbage colector*.
 
-Este lenguaje es de [código abierto](https://github.com/rust-lang) y fue creado inicialmente por **Graydon Hoare** en **Mozilla**.
+Este lenguaje es de [código abierto](https://github.com/rust-lang) y fue creado inicialmente por [**Graydon Hoare**](https://github.com/graydon) en **Mozilla**.
 
 Puedes encontrar más información sobre el lenguaje en [**Rust's website**](https://www.rust-lang.org/).
 
@@ -836,7 +836,7 @@ fn main() {
     let point_A = PointA { x: 5, y: "Hola" };
 }
 
-// esto está bien, pero nos estamos limitando a un tipo de dato i32 en este caso
+// esto está bien, pero nos estamos limitando a un tipo de dato, i32 en este caso
 // si quisieramos ser mas especificos con las coordenadas no podríamos hacerlo
 /*
 struct Point {
@@ -872,5 +872,89 @@ struct Point<T> {
 // debemos indicar en la declaración de la funcion que se usa el generico <T>
 fn calculate_area<T>(pointa: Point<T>, pointb: Point<T>) {
     // ...
+}
+```
+
+## Traits
+
+Los `traits` son similares a lo que son las interfaces en otros lenguajes, pero tienen sus particularidades.
+
+Una `interfaz/trait` es un contrato entre dos entidades, esto quiere decir que una interfaz provee un servicio a una `clase/struct` consumidora. Por ende, la interfaz solo nos muestra la declaración de los métodos que esta posee, no su implementación.
+
+Ejemplo:
+
+```rust
+fn main() {
+    // Traits = rasgos
+    let juan = Human;
+    println!("{}", juan.say_hi());
+
+    let michi = Cat;
+    println!("{}", michi.say_hi());
+
+    // no puedo hacer
+    // michi.language();
+    // porque language() no recibe &self como parametro
+    println!("{}", Cat::language());
+}
+
+struct Human;
+struct Cat;
+
+trait Talk { // aka interface
+    fn say_hi(&self) -> String;
+
+    // funcion estatica
+    fn language() -> String {
+        "no tengo idioma".to_string() // le damos un comportamiento por defecto
+        // esto hace que no sea obligatorio implementarlo en cada struct que quizas no necesite de este comportamiento
+    }
+}
+
+impl Talk for Human { // implementamos el trait para Human, es obligatorio implementar todos los metodos de la interfaz
+    fn say_hi(&self) -> String {
+        "Hola".to_string() // este comportamiento es el que implementamos
+    }
+
+    fn language() -> String {
+        "Español".to_string() // este comportamiento es el que implementamos
+    }
+}
+
+impl Talk for Cat {
+    fn say_hi(&self) -> String {
+        "Miau!".to_string() // aqui variamos el comportamiento, pero seguimos manteniendo la forma del trait
+    }
+
+    fn language() -> String {
+        "catlang".to_string()
+    }
+}
+```
+
+Podemos tambien usar los `traits` de la siguiente manera:
+
+```rust
+fn main() {
+    let age: Option<i32> = Some(21);
+
+    if age.is_legal_age() { // devuelve un booleano
+        // do something
+    } else {
+        // do something else
+    }
+}
+
+trait DriverLicense { // el formato de los traits es camelCase
+    fn is_legal_age(&self) -> bool;
+}
+
+impl DriverLicense for Option<i32> { // extendemos la funcionalidad de Option
+    fn is_legal_age(&self) -> bool {
+        match self {
+            Some(age) => age >= &18,
+            None => false,
+        }
+    }
 }
 ```
