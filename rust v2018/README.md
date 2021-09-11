@@ -1025,3 +1025,74 @@ impl Iterator for Counter {
     }
 }
 ```
+
+## Closures
+
+```rust
+fn main() {
+    let sum = sum_one; // asignamos la funcion sum_one a la variable sum
+    sum(1); // luego podemos llamar a la funcion sum_one directamente con la variable sum
+    // como si fuera una funcion normal
+}
+
+// puedo asignar esta funcion a una variable
+fn sum_one(x: i32) -> i32 {
+    x + 1
+}
+```
+
+Un `closure` es similar a una lambda. En Rust son funciones anonimas que pueden ser almacenadas en variables o tambien pueden ser pasadas como argumentos a otras funciones.
+
+```rust
+// closure: funcion que es definida en linea (inline)
+fn main() {
+
+    let sum = |nro:i32| -> i32 {
+        nro + 1
+    };
+
+    // tambien podriamos no declarar ningun tipo
+    // rust infiere el tipo de la funcion
+    /*
+    let sum = |nro| {
+        nro + 1
+    };    
+    */
+
+    // tambien pueden recibir mas de un parametro
+    let sum1 = |x:i32, y:i32| -> i32 {
+        x + y
+    }
+
+    println!("{}", sum(4));
+    println!("{}", sum1(4, 2));
+
+    // una closure puede recibir variables desde el scope donde se creo
+
+    let counter = 1;
+
+    let increment = || {
+        println!("{}", counter); // solo imprime el valor de counter, no lo modifica
+    };
+
+    let var = &counter; // borrow
+    // podemos hacer esto porque counter no se modifica
+
+    increment();
+
+}
+```
+
+Pero si queremos modificar el valor de la variable counter dentro de la closure luego, no podemos hacer borrow, porque la variable ya no esta disponible.
+
+```rust
+fn main() {
+    let mut counter = 1;
+
+    let mut increment = || {
+        counter += 1;
+    }
+
+    // let var = &counter; // error
+}
+```
