@@ -748,6 +748,7 @@ fn hasAccess(user_role: UserRole) -> bool {
     match user_role { // match sirve para evaluar las variaciones de un enum
         UserRole::ADMIN => true, // dependiendo de la variación, devolvemos un valor
         UserRole::BASIC => false,
+        // match tiene que ser exhaustivo, por lo que debemos añadir un comportamiento para cada valor posible
     }
 }
 
@@ -956,5 +957,29 @@ impl DriverLicense for Option<i32> { // extendemos la funcionalidad de Option
             None => false,
         }
     }
+}
+```
+
+## Trait Debug y el atributo Derive
+
+El trait `Debug` nos permite imprimir una `struct` en consola, normalmente se usa para depurar.
+
+```rust
+#[derive(Debug)] // esto es para que el struct se pueda imprimir en consola, derive es una macro
+struct User {
+    name: String,
+    age: i32,
+}
+
+fn main() {
+    let user = User {
+        name: "Andrea".to_string(),
+        age: 21,
+    };
+
+    // println!("{}", user); normalmente no podemos hacer esto, porque no tenemos implementacion de Debug
+    // el compilador no sabe como imprimir la struct
+    println!("{:?}", user); // con el atributo Derive podemos hacer esto
+    // para imprimir usando el trait Debug debemos poner {:?} en el println
 }
 ```
