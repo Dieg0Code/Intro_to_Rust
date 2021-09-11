@@ -983,3 +983,45 @@ fn main() {
     // para imprimir usando el trait Debug debemos poner {:?} en el println
 }
 ```
+
+## Iterators
+
+Hablamos de iteradores cuando queremos usar la lógica de iterar sobre una secuencia de datos hasta que se acaben, es decir, recorrer todos los elementos de una secuencia. Podemos tambien hacer una acción sobre cada elemento de la secuencia.
+
+```rust
+fn main() {
+    let s = [1, 2, 3, 4, 5]; // esto es un slice, implenta el trait Iterator
+    for x in s.iter() {
+        println!("{}", x + 1);
+    } // iterador
+    // la funcion iter() no nos quita el ownership de la variable s, por lo que podemos seguir usando la variable s fuera del scope del for
+    println!("{:?}", s);
+    // los vectores tambien implementan el trait Iterator
+    // let vector = Vec::new();
+    // vector.iter();
+
+    let mut c = Counter::new();
+    c.next();
+}
+
+// como iterator es un trait, podemos usarlo para extender funcionalidades
+
+struct Counter {
+    count: u32,
+}
+
+impl Counter {
+    fn new() -> Counter {
+        Counter { count: 0 }
+    }
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.count += 1;
+        Some(self.count)
+    }
+}
+```
